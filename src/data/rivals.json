@@ -1,0 +1,209 @@
+{
+  "rivals": [
+    {
+      "id": "kenn",
+      "name": "Kenn",
+      "title": "Blade of Celestia",
+      "archetype": "Skirmisher",
+      "archetype_color": "#ffb3b3",
+      "description_markdown": "Kenn is a mobile assassin built around rapid pressure and buff windows. Kenn excels at short kill windows, chaining healing, fast movement and swift damage.",
+      "stats": {
+        "base_speed": 22.5,
+        "health": 650,
+        "ultimate_charge": 1350
+      },
+      "abilities": [
+        {
+          "slot": "basic",
+          "name": "Bladeshot",
+          "type": "Single cast",
+          "duration": "N/A",
+          "charges": "N/A",
+          "description_markdown": "Throw one blade toward aim. This attack deals **80** base damage. If [Spectre](ability://ultimate) is active,blade type changes and heals Kenn for **20%** dealt damage. If [Assassin's thrust](ability://signature_ii) is active, each blade also applies **Bleed**."
+        },
+        {
+          "slot": "alternate",
+          "name": "Bladespread",
+          "type": "Single cast",
+          "duration": "N/A",
+          "charges": "N/A",
+          "description_markdown": "Kenn throws a 5-blade fan with random spread. Every\nblade inherits all [Bladeshot](ability://basic) modifiers (Spectre heal, Swiftness bleed)."
+        },
+        {
+          "slot": "signature_i",
+          "name": "Furry of blades",
+          "type": "Active",
+          "duration": "2.0s",
+          "charges": "N/A",
+          "description_markdown": "Kenn spawns a tornado and enters a defensive state. Gaining **Protection** for **2.0s** and emitting rotating blade pairs towards aim."
+        },
+        {
+          "slot": "signature_ii",
+          "name": "Assassin's thrust",
+          "type": "Active",
+          "duration": "12.0s",
+          "charges": "N/A",
+          "description_markdown": "Kenn gains a long mobility boost, gaining the **Swiftness** effect for **12s**. While active, [Bladeshot](ability://basic) and [Bladespread](ability://alternate) blades apply **Bleed**."
+        },
+        {
+          "slot": "ultimate",
+          "name": "Spectre",
+          "type": "Active Ultimate",
+          "duration": "30.0s",
+          "charges": "N/A",
+          "description_markdown": "Kenn transforms into **Spectre** form. During Spectre, blade hits heal Kenn for **20%** of damage. On kill during Spectre, Kenn\ngains the **Invisibility** effect for **2s**. "
+        }
+      ]
+    },
+    {
+      "id": "gramin",
+      "name": "Gramin",
+      "title": "Commander of Celestia",
+      "archetype": "Marksman",
+      "archetype_color": "#FFD27D",
+      "description_markdown": "Gramin is a marksman that controls space with bullets, grenades, and heavy artillery. He can sustain himself during battles and can be relied on to hold off enemies.",
+      "stats": {
+        "base_speed": 20,
+        "health": 650,
+        "ultimate_charge": 1350
+      },
+      "abilities": [
+        {
+          "slot": "basic",
+          "name": "Rifle / Dawnbreaker",
+          "type": "Single cast",
+          "duration": "N/A",
+          "charges": "N/A",
+          "description_markdown": "Gramin shoots a single bullet using his currently equipped weapon."
+        },
+        {
+          "slot": "alternate",
+          "name": "Burst sequence",
+          "type": "Single cast",
+          "duration": "0.6s burst window",
+          "charges": "N/A",
+          "description_markdown": "Gramin rapidly fires multiple bullets using his currently equipped weapon."
+        },
+        {
+          "slot": "signature_i",
+          "name": "Grenade / Detonate",
+          "type": "Double cast",
+          "duration": "Grenade lifetime up to 3.0s",
+          "charges": "N/A",
+          "description_markdown": "Gramin throws a grenade that explodes after 5.0s, **RECAST** to detonate it early."
+        },
+        {
+          "slot": "signature_ii",
+          "name": "Combat medkit",
+          "type": "Charges",
+          "duration": "N/A",
+          "charges": "5 max",
+          "description_markdown": "Gramins heals himself for 40 HP."
+        },
+        {
+          "slot": "ultimate",
+          "name": "Same plan, different weapon",
+          "type": "Active With Charges Ultimate",
+          "duration": "40.0s",
+          "charges": "50 rockets",
+          "description_markdown": "Gramin charges his Dawnbreaker and gears up with it. Once active, Dawnbreaker stance lasts **40.0s**. During that\nstate, a **RECAST** launches a powerful rocket that propels Gramin backward. On impact, the rocket explodes and\nthen splits into 4 explosive debris projectiles. Gramin can also shoot more powerful bullets using [Rifle / Dawnbreaker](ability://basic) and [Burst sequence](ability://alternate)."
+        }
+      ]
+    },
+    {
+      "id": "lenya",
+      "name": "Lenya",
+      "title": "Blessed Crystalweaver",
+      "archetype": "Catalyst",
+      "archetype_color": "#C9A0FF",
+      "description_markdown": "Lenya blends ranged poke, selective healing, and utility setups. She is a flexible front-to-back rival with\ntwo shot profiles and strong combo utility.",
+      "stats": {
+        "base_speed": 22,
+        "health": 650,
+        "ultimate_charge": 1350
+      },
+      "abilities": [
+        {
+          "slot": "basic",
+          "name": "Fireshot",
+          "type": "Single cast",
+          "description_markdown": "Lenya shoots her fireball, dealing **60** damage. It also applies a small heal."
+        },
+        {
+          "slot": "alternate",
+          "name": "Manashot",
+          "type": "Single cast",
+          "duration": "N/A",
+          "charges": "N/A",
+          "description_markdown": "Lenya shoots her manaball. This variant deals **10** damage. In exchange, it provides **30** healing."
+        },
+        {
+          "slot": "signature_i",
+          "name": "Vitality capsule",
+          "type": "Double Cast",
+          "duration": "Orb lifetime up to 3.0s",
+          "description_markdown": "Lenya deploys a bouncing orb. The orb bounces up to **3** times before exploding, dealing damage to enemies and healing allies. **RECAST** to detonate the orb early."
+        },
+        {
+          "slot": "signature_ii",
+          "name": "Arc barrier",
+          "type": "One Cast",
+          "description_markdown": "Lenya creates and shapes a wall barrier from her current aim direction. **HOLD** to bend the wall while it's created."
+        },
+        {
+          "slot": "ultimate",
+          "name": "Blessful aura",
+          "type": "Ultimate",
+          "duration": "Field lasting 60.0s",
+          "description_markdown": "Lenya channels her two elemental energies into her amulet, and detonates the energy into a large aura field around her, any enemies caught in the field get damaged and continue to bleed as long as they are in the field, and any allies in the field heal and continue to heal as long as they are in the field. "
+        }
+      ]
+    },
+    {
+      "id": "masr",
+      "name": "Masr",
+      "title": "Stormblade",
+      "archetype": "Skirmisher",
+      "archetype_color": "#7EE0FF",
+      "description_markdown": "Masr is a speed-focused disruptor. Masr excels at focused burst damage and fast retreats, making a lack of coordination his only potential weakness.",
+      "stats": {
+        "base_speed": 24,
+        "health": 650,
+        "ultimate_charge": 1350
+      },
+      "abilities": [
+        {
+          "slot": "basic",
+          "name": "Thunderbolt",
+          "type": "Single cast",
+          "description_markdown": "Masr throws a lightning bolt projectile. If [Stormwrath](ability://ultimate) is active, the lightning bolt gains bounce. "
+        },
+        {
+          "slot": "alternate",
+          "name": "Charged thunderbolt",
+          "type": "Single cast",
+          "description_markdown": "Masr charges his sword and queues a heavier bolt release. On collision, the charged bolt triggers an explosion."
+        },
+        {
+          "slot": "signature_i",
+          "name": "Storm barrier",
+          "type": "Single cast",
+          "description_markdown": "Masr perform a slash that places an oriented light wall that blocks only projectiles."
+        },
+        {
+          "slot": "signature_ii",
+          "name": "Tempest blink",
+          "type": "Passive",
+          "description_markdown": "**PASSIVE**: Masr can dash in any direction and has a higher dash range. When [Stormwrath](ability://ultimate) is active, his dashes grant him Invisibility. "
+        },
+        {
+          "slot": "ultimate",
+          "name": "Stormwrath",
+          "type": "Active Ultimate",
+          "duration": "30.0s",
+          "description_markdown": "Masr channels Stormwrath and enters empowered state. While active, his [Thunderbolts](ability://basic) gain stronger bounce/explosion interactions."
+        }
+      ]
+    }
+  ]
+}

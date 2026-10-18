@@ -1,30 +1,117 @@
-import NavbarButton from "@/components/navbar/NavbarButton";
-import {useState} from 'react';
-import Button from '@/components/Button';
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { FaArrowUpRightFromSquare, FaBars, FaChevronDown, FaDownload, FaUser, FaXmark } from "react-icons/fa6";
 import Icon from "@/assets/images/logo/icon/icon.webp";
-import Image from 'next/image';
+import { useAuth } from "@/contexts/AuthContext";
+import NavMenu from "./NavMenu";
+import { navGroups, navLinks } from "./navigation";
 
-
+/** Full-width top bar with dropdown menus (design.md § Navigation). */
 export default function Navbar() {
+    const router = useRouter();
+    const { status, user } = useAuth();
+    const [openMenu, setOpenMenu] = useState<string | null>(null);
+    const [sheetOpen, setSheetOpen] = useState(false);
+    const [heroCtaVisible, setHeroCtaVisible] = useState(false);
+    const navRef = useRef<HTMLElement>(null);
+    const path = router.asPath.split(/[?#]/)[0];
 
-    return (
-        <nav className="p-1 w-full h-5 z-10 fixed">
-            <div className="bg-backblue opacity-80 p-2 relative">
-                <div className="w-full relative flex flex-row justify-center">
-                    <Image className="navbar-logo h-full w-auto hidden md:block" src={Icon} alt="Rivalium Icon"/>
-                    <div className="w-full md:w-2/3 flex flex-row justify-evenly text-sm md:text-2xl my-2 flex-wrap">
-                        <NavbarButton text="Home" href="/"/>
-                        <NavbarButton text="Play" href="/download"/>
-                        <NavbarButton text="Gameplay" href="/gameplay" />
-                        <NavbarButton text="Rivals" href="/rivals" disabled/>
-                        <NavbarButton text="Patch Notes" href="/patch-notes/"/>
-                        <NavbarButton text="Discover" href="/discover" disabled/>
-                        <NavbarButton text="Support" href="/support" />
-                        <NavbarButton text="Discord" href="https://discord.rivalium.online" blank/>
-                    </div>
-                </div>
+    useEffect(() => { setOpenMenu(null); setSheetOpen(false); }, [router.asPath]);
+
+    // Close menus on outside click and Esc.
+    useEffect(() => {
+        if (!openMenu && !sheetOpen) return;
+        const onPointer = (event: PointerEvent) => { if (!navRef.current?.contains(event.target as Node)) { setOpenMenu(null); setSheetOpen(false); } };
+        const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpenMenu(null); setSheetOpen(false); } };
+        window.addEventListener("pointerdown", onPointer);
+        window.addEventListener("keydown", onKey);
+        return () => { window.removeEventListener("pointerdown", onPointer); window.removeEventListener("keydown", onKey); };
+    }, [openMenu, sheetOpen]);
+
+    // One ember action per viewport: hide the nav Play button while the landing hero's Play is on screen.
+    useEffect(() => {
+        const heroCta = document.getElementById("hero-cta");
+        if (!heroCta) { setHeroCtaVisible(false); return; }
+        const observer = new IntersectionObserver(([entry]) => setHeroCtaVisible(entry.isIntersecting), { threshold: 0.1 });
+        observer.observe(heroCta);
+        return () => observer.disconnect();
+    }, [router.asPath]);
+
+    const groupActive = (id: string) => {
+        const group = navGroups.find(item => item.id === id)!;
+        return group.items.some(item => !item.external && (path === item.href || path.startsWith(item.href + "/")));
+    };
+
+    const account = status === "signed-in"
+        ? <Link href="/account" aria-label="Your account" className="inline-flex items-center gap-2 h-11 px-3.5 rounded-full border border-ice/30 hover:border-ice/70 hover:bg-ice/10 transition-colors label-caps text-sm text-ice hover:text-ink">
+            <FaUser aria-hidden /> <span className="hidden sm:inline max-w-[8rem] truncate">{user?.playerName ?? user?.username}</span>
+        </Link>
+        : status === "signed-out"
+            ? <Link href={{ pathname: "/portal/login", query: path.startsWith("/portal") ? {} : { next: router.asPath } }}
+                className="inline-flex items-center h-11 px-4 rounded-full border border-ice/30 hover:border-ice/70 hover:bg-ice/10 transition-colors label-caps text-sm text-ice hover:text-ink whitespace-nowrap">Sign in</Link>
+            : <span className="w-24" aria-hidden />;
+
+    const play = <Link href="/download"
+        className={`button main is-sm inline-flex items-center gap-2 px-4 text-sm !min-h-[40px] transition-opacity duration-200 ${heroCtaVisible ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+        aria-hidden={heroCtaVisible || undefined} tabIndex={heroCtaVisible ? -1 : undefined}>
+        <FaDownload aria-hidden /> Play
+    </Link>;
+
+    return <nav ref={navRef} aria-label="Main" className="fixed top-0 inset-x-0 z-nav p-2 flex flex-col pointer-events-none">
+        <div className="pointer-events-auto glass-strong !bg-paper/90 !rounded-xl w-full h-[64px] px-3 md:px-4 flex items-center gap-2">
+            <Link href="/" className="shrink-0 flex items-center gap-2 pr-2" aria-label="Rivalium home">
+                <Image className="h-8 w-auto" src={Icon} alt="" priority />
+                <span className="display text-lg text-gradient hidden sm:inline">Rivalium</span>
+            </Link>
+            <div className="hidden lg:flex flex-1 justify-center items-stretch h-full">
+                {navGroups.map(group => <NavMenu key={group.id} group={group} active={groupActive(group.id)}
+                    open={openMenu === group.id} onOpenChange={open => setOpenMenu(open ? group.id : (openMenu === group.id ? null : openMenu))} />)}
+                {navLinks.map(link => {
+                    const active = !link.external && (path === link.href || path.startsWith(link.href + "/"));
+                    const className = `relative h-full inline-flex items-center gap-1.5 px-3 xl:px-4 label-caps text-[15px] whitespace-nowrap transition-colors
+                        ${active ? "text-ink" : "text-ice hover:text-ink"}
+                        after:absolute after:left-3 after:right-3 after:bottom-1 after:h-[3px] after:rounded-full after:bg-frost after:transition-transform after:duration-200
+                        ${active ? "after:scale-x-100" : "after:scale-x-0"}`;
+                    return link.external
+                        ? <a key={link.href} href={link.href} target="_blank" rel="noreferrer" className={className}>{link.label}<FaArrowUpRightFromSquare aria-hidden className="text-[10px] opacity-70" /></a>
+                        : <Link key={link.href} href={link.href} aria-current={active ? "page" : undefined} className={className}>{link.label}</Link>;
+                })}
             </div>
-        </nav>
-    );
+            <div className="flex flex-1 lg:flex-none justify-end items-center gap-2">
+                {play}
+                {account}
+                <button type="button" className="lg:hidden grid place-items-center w-11 h-11 rounded-full text-ice hover:bg-ice/10"
+                    aria-expanded={sheetOpen} aria-controls="mobile-nav" aria-label={sheetOpen ? "Close menu" : "Open menu"} onClick={() => setSheetOpen(value => !value)}>
+                    {sheetOpen ? <FaXmark /> : <FaBars />}
+                </button>
+            </div>
+        </div>
 
+        {sheetOpen && <div id="mobile-nav" className="lg:hidden pointer-events-auto glass-raised rounded-xl mt-2 p-2 w-full max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-thin text-left fade-in">
+            {navGroups.map(group => <details key={group.id} className="group border-b border-ice/10 last:border-0" open={groupActive(group.id)}>
+                <summary className="list-none flex items-center justify-between min-h-[52px] px-3 label-caps text-base text-ink cursor-pointer">
+                    {group.label} <FaChevronDown aria-hidden className="text-xs transition-transform group-open:rotate-180" />
+                </summary>
+                <ul className="pb-2">
+                    {group.items.map(item => <li key={item.href}>
+                        <a href={item.href} target={item.external && item.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"
+                            className="flex items-center gap-3 min-h-[48px] px-3 rounded-xl hover:bg-paper-4">
+                            {item.icon && <item.icon aria-hidden className="text-frost shrink-0" />}
+                            <span className="font-body text-ink-2">{item.label}</span>
+                        </a>
+                    </li>)}
+                </ul>
+            </details>)}
+            <ul className="pt-1">
+                {navLinks.map(link => <li key={link.href}>
+                    <a href={link.href} target={link.external ? "_blank" : undefined} rel="noreferrer"
+                        className="flex items-center justify-between min-h-[52px] px-3 rounded-xl label-caps text-base text-ink hover:bg-paper-4">
+                        {link.label}{link.external && <FaArrowUpRightFromSquare aria-hidden className="text-xs opacity-70" />}
+                    </a>
+                </li>)}
+            </ul>
+        </div>}
+    </nav>;
 }

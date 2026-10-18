@@ -1,135 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import axios from 'axios';
-import { apiUrl } from '@/components/constant';
-import Button from '@/components/Button';
-import DefaultSplash from '@/assets/images/splash/patch-notes-splash.webp'
-import Image from 'next/image';
 import Head from 'next/head';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { FaArrowRight } from 'react-icons/fa6';
+import Button from '@/components/Button';
+import Notice from '@/components/ui/Notice';
+import PageHeader from '@/components/ui/PageHeader';
+import { api, ApiError } from '@/lib/api';
+import { formatDate } from '@/lib/game';
 
 type Version = {
-  version: string;
-  changelog?: {
-    title?: string;
-    generalText?: string;
-  };
-  imageUrl?: string; // Add this if versions have associated images
+    version: string;
+    published?: boolean;
+    publishedAt?: number;
+    changelog?: { title?: string; generalText?: string; imageUrl?: string };
 };
 
-const PatchNotes = () => {
-  const [versions, setVersions] = useState<Version[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [page, setPage] = useState<number>(1);
-  const [filter, setFilter] = useState<string>('patch'); // Default filter to 'patch'
-  const itemsPerPage = 15; // Display 15 items per page
+// The API includes broader levels: "patch" also returns minor and season releases.
+const filters = [
+    { id: 'patch', label: 'All updates' },
+    { id: 'minor', label: 'Major updates' },
+    { id: 'season', label: 'Seasons' },
+];
+const itemsPerPage = 12;
 
-  const router = useRouter();
+export default function PatchNotes() {
+    const [versions, setVersions] = useState<Version[] | null>(null);
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [filter, setFilter] = useState('patch');
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchVersions = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/version/all`, {
-          params: {
-            itemsPerPage,
-            page,
-            level: filter,
-          },
-        });
-        setVersions(response.data.versions.filter((version: any) => version.published));
-        setTotal(response.data.total); // Set the total items from the API
-      } catch (error) {
-        console.error('Error fetching versions:', error);
-      }
-    };
+    useEffect(() => {
+        const controller = new AbortController();
+        setVersions(null); setError(null);
+        api<{ versions: Version[]; total: number }>('/version/all', { query: { itemsPerPage, page, level: filter }, signal: controller.signal })
+            .then(data => { setVersions(data.versions.filter(version => version.published)); setTotal(data.total); })
+            .catch(failure => { if (!controller.signal.aborted) setError(failure instanceof ApiError ? failure.message : "Couldn't load patch notes."); });
+        return () => controller.abort();
+    }, [page, filter]);
 
-    fetchVersions();
-  }, [page, filter]);
+    const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
-  const handleItemClick = (version: string) => {
-    router.push(`/patch-notes/${version}`);
-  };
+    return <>
+        <Head><title>Patch Notes - Rivalium</title></Head>
+        <main className="w-full min-h-screen pb-16">
+            <PageHeader title="Patch Notes" lead="Every change to rivals, maps and systems, newest first."
+                crumbs={[{ label: 'Home', href: '/' }, { label: 'Patch notes' }]} />
 
-  const totalPages = Math.ceil(total / itemsPerPage);
+            <div className="max-w-6xl mx-auto px-4 flex flex-col gap-6">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="segmented" role="group" aria-label="Filter updates">
+                        {filters.map(item => <button key={item.id} type="button" aria-pressed={filter === item.id}
+                            onClick={() => { setFilter(item.id); setPage(1); }}>{item.label}</button>)}
+                    </div>
+                    {totalPages > 1 && <nav aria-label="Pages" className="flex items-center gap-2">
+                        <Button small type="no-back" content="Newer" disabled={page === 1} onClick={() => setPage(page - 1)} />
+                        <span className="font-body text-sm text-lavender tabular-nums px-1">{page} / {totalPages}</span>
+                        <Button small type="no-back" content="Older" disabled={page >= totalPages} onClick={() => setPage(page + 1)} />
+                    </nav>}
+                </div>
 
-  return (
-    <>
-    <Head>
-        <title>Rivalium Patch Notes - The Realm of Rivals</title>
-    </Head>
-    <main className="w-full mt-20 md:mt-[150px] px-4 pb-[200px] min-h-screen">
-      <div className="w-full flex flex-row justify-center">
-        <h1 className="text-4xl md:text-[5rem] pt-10 pb-10 text-center title">PATCH NOTES</h1>
-      </div>
-
-      {/* Controls: Pagination and Filter */}
-      <div className="flex w-full justify-between mb-4 items-center">
-        <div className="flex justify-center items-center">
-          <Button
-            small
-            type="main"
-            content="Previous"
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
-          />
-          <span className="px-2 md:px-4 md:py-2 text-sm md:text-lg secondary-text text-lightblue">
-            Page {page} of {totalPages}
-          </span>
-          <Button
-            small
-            type="main"
-            content="Next"
-            disabled={page === totalPages}
-            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          />
-        </div>
-        <select
-          value={filter}
-          onChange={(e) => {
-            setFilter(e.target.value);
-            setPage(1); // Reset to page 1 when filter changes
-          }}
-          className="p-2 border border-lightblue rounded w-1/4 text-center text-xs md:text-lg 
-            secondary-text bg-transparent text-lightblue"
-        >
-          <option value="season" className="bg-transparent">
-            Season
-          </option>
-          <option value="minor">Minor</option>
-          <option value="patch">Patch</option>
-          <option value="build">Build</option>
-        </select>
-      </div>
-
-      {/* Versions Grid */}
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 overflow-y-scroll md:overflow-y-auto">
-        {versions.map((version) => {
-          let title = version.version;
-          let secondaryTitle = version.changelog?.title || '';
-          let imageUrl = version.imageUrl || DefaultSplash;
-
-          return (
-            <div
-              key={version.version}
-              className="bg-backblue opacity-80 p-4 shadow-md cursor-pointer hover:opacity-70 transition duration-300
-              flex flex-col items-center justify-between text-lightblue"
-              onClick={() => handleItemClick(version.version)}
-            >
-              <Image
-                src={imageUrl}
-                alt={title}
-                className="w-full h-[100px] md:h-[250px] object-cover rounded-t-lg"
-              />
-              <div className="flex flex-col items-center justify-start mt-2 text-center">
-                <p className="text-4xl md:text-5xl font-bold">{title}</p>
-                <p className="text-md md:text-xl secondary-text mt-1">{secondaryTitle}</p>
-              </div>
+                {error ? <Notice tone="error" title="Patch notes are unavailable">{error}</Notice>
+                    : versions === null ? <div className="flex flex-col gap-2">{Array.from({ length: 6 }, (_, index) => <div key={index} className="skeleton h-20" />)}</div>
+                    : versions.length === 0 ? <div className="glass p-8 text-center font-body text-lavender">No updates in this category yet.</div>
+                    : <ul className="glass divide-y divide-ice/10 overflow-hidden text-left">
+                        {versions.map((version, index) => <li key={version.version}>
+                            <Link href={`/patch-notes/${version.version}`} className="group grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[9rem_minmax(0,1fr)_9rem_auto] items-center gap-x-6 gap-y-1 px-5 md:px-6 py-5 hover:bg-paper-4 transition-colors">
+                                <span className="display text-step-2 text-ink tabular-nums flex items-center gap-3">
+                                    {version.version}
+                                    {index === 0 && page === 1 && <span className="chip !text-ice !py-0.5">Latest</span>}
+                                </span>
+                                <span className="col-span-2 md:col-span-1 row-start-2 md:row-start-auto flex flex-col min-w-0">
+                                    <span className="font-body text-step-0 text-ink truncate">{version.changelog?.title || `Update ${version.version}`}</span>
+                                    {version.changelog?.generalText && <span className="font-body text-sm text-ink-2 line-clamp-1">{version.changelog.generalText}</span>}
+                                </span>
+                                <span className="hidden md:block font-body text-sm text-ink-3 tabular-nums">{formatDate(version.publishedAt)}</span>
+                                <FaArrowRight aria-hidden className="text-ice justify-self-end transition-transform duration-200 group-hover:translate-x-0.5" />
+                            </Link>
+                        </li>)}
+                    </ul>}
             </div>
-          );
-        })}
-      </div>
-    </main>
-    </>
-  );
-};
-
-export default PatchNotes;
+        </main>
+    </>;
+}

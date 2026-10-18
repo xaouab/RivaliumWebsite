@@ -14,16 +14,18 @@ const images = [R, I, V, A, L, SWORD, U, M];
 export default function Logo() {
 
     return (
-        <div className="logo">
+        <div className="logo" role="img" aria-label="Rivalium, the realm of rivals">
             {images.map((image, i) => (
                 <Image
                     key={i}
                     src={image}
                     className="letter"
-                    alt={`logo-letter-${i}`}
+                    style={{ ["--i" as any]: i }}
+                    alt=""
+                    priority
                 />
             ))}
-            <Image className="logo-desc" src={Description} alt="The realm of rivals"/>
+            <Image className="logo-desc" src={Description} alt=""/>
         </div>
     );
 }

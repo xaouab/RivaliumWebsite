@@ -1,13 +1,17 @@
+// Brand faces. `swap` shows text immediately in the fallback, then swaps in the brand face,
+// so a slow connection never hides content (typography: font loading strategy).
 @font-face {
   font-family: mainFont;
-  src: url(motioncontrol.otf);
+  src: url(motioncontrol.otf) format("opentype");
+  font-display: swap;
 }
 
 @font-face {
   font-family: secondaryFont;
-  src: url(BAHNSCHRIFT.TTF)
+  src: url(BAHNSCHRIFT.TTF) format("truetype");
+  font-display: swap;
 }
 
 .secondary-text, .secondary-text * {
-  font-family: secondaryFont;
+  font-family: secondaryFont, system-ui, sans-serif;
 }

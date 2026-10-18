@@ -1,0 +1,390 @@
+/* Hallmark · genre: atmospheric · macrostructure: Feature Stack (marketing) / Long Document (content) / Index-First (indexes)
+ * theme: custom (Rivalium brand, tokens.css) · nav: full-width bar + menus (owner) · footer: 4-column (owner) · design-system: design.md · designed-as-app
+ * pre-emit critique: P4 H5 E4 S5 R4 V4
+ *
+ * Every value references tokens.css. Rules: navy glass surfaces (owner's choice), elevation by lightness, blur on
+ * layers, ember = one primary action per viewport, no gradient headline text, no glow halos, no infinite loops.
+ */
+
+// ---------------------------------------------------------------------------
+// Fluid modular type scale (major third, rem + clamp so user text size wins)
+// ---------------------------------------------------------------------------
+:root {
+    --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+    --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.375rem);
+    --step-2: clamp(1.44rem, 1.3rem + 0.7vw, 1.75rem);
+    --step-3: clamp(1.73rem, 1.5rem + 1.15vw, 2.375rem);
+    --step-4: clamp(2.07rem, 1.7rem + 1.9vw, 3.25rem);
+    --step-5: clamp(2.5rem, 1.9rem + 3vw, 4.5rem);
+    --step-6: clamp(3rem, 2rem + 5vw, 6rem);
+}
+
+html, body { overflow-x: clip; }
+
+// Scroll timeline shared by the page so out-of-tree layers (splash art) can follow scroll.
+body { timeline-scope: --page; }
+.main-container { scroll-timeline: --page block; }
+
+// ---------------------------------------------------------------------------
+// Backdrop scrim: keeps text legible over splash art
+// ---------------------------------------------------------------------------
+.page-scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-base);
+    background:
+        radial-gradient(ellipse at 70% 10%, transparent 0%, oklch(var(--paper-lch) / .3) 55%, oklch(var(--paper-lch) / .7) 100%),
+        linear-gradient(to bottom, oklch(var(--paper-lch) / .25) 0%, oklch(var(--paper-lch) / .62) 45%, oklch(var(--paper-lch) / .88) 100%);
+    transition: opacity 500ms var(--ease-out);
+
+    // Landing hero: lighter so the splash reads; text sits on the logo's own drop shadow + halo.
+    &.is-hero { opacity: .6; }
+}
+
+// Subtle depth on the hero art, driven by page scroll (CSS only; static where unsupported).
+@supports (animation-timeline: scroll()) {
+    .hero-depth {
+        animation: hero-depth linear both;
+        animation-timeline: --page;
+        animation-range: 0 100vh;
+    }
+    @keyframes hero-depth {
+        from { transform: scale(1.04) translateY(0); }
+        to { transform: scale(1.1) translateY(-3%); }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Parallax (landing hero). Layers translate at different speeds while the hero scrolls out.
+// Requested by the owner; kept to one stage, transform-only, off for reduced motion and small screens.
+// ---------------------------------------------------------------------------
+.parallax-stage { view-timeline-name: --hero; }
+.parallax-far, .parallax-near { transform: scale(1.06); transform-origin: 50% 40%; }
+@supports (animation-timeline: view()) {
+    .parallax-far, .parallax-near {
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --hero;
+        animation-range: exit 0% exit 100%;
+    }
+    .parallax-far { animation-name: parallax-far; }
+    .parallax-near { animation-name: parallax-near; }
+    @keyframes parallax-far { from { transform: scale(1.06) translateY(0); } to { transform: scale(1.06) translateY(38%); } }
+    @keyframes parallax-near { from { transform: scale(1.06) translateY(0); } to { transform: scale(1.12) translateY(10%); } }
+}
+@media (max-width: 640px), (prefers-reduced-motion: reduce) {
+    .parallax-far, .parallax-near { animation: none !important; }
+}
+
+// ---------------------------------------------------------------------------
+// Type
+// ---------------------------------------------------------------------------
+.display {
+    font-family: var(--font-display);
+    font-style: normal;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+.label-caps {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+}
+// Ordinal labels only (phases, steps). Not a decorative eyebrow.
+.kicker {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: var(--step--1);
+    color: var(--color-ice);
+}
+.text-step--1 { font-size: var(--step--1); }
+.text-step-0 { font-size: var(--step-0); }
+.text-step-1 { font-size: var(--step-1); }
+.text-step-2 { font-size: var(--step-2); }
+.text-step-3 { font-size: var(--step-3); }
+.text-step-4 { font-size: var(--step-4); }
+.text-step-5 { font-size: var(--step-5); }
+.text-step-6 { font-size: var(--step-6); }
+
+// Brand gradient: wordmark only.
+.text-gradient {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+// Titles are solid ink; the brand shows as a short drawn underline.
+.title-mark::after {
+    content: "";
+    display: block;
+    width: 3.5rem;
+    height: 4px;
+    margin-top: .55rem;
+    border-radius: var(--radius-pill);
+    background: var(--gradient-brand);
+}
+.title-mark.is-centered::after { margin-inline: auto; }
+// Dark halo for text placed over art (shadow is tight and dark, never coloured).
+.title-halo { text-shadow: 0 2px 10px oklch(var(--paper-lch) / .85); }
+
+// Long-form text: Long Document voice.
+.prose-rivalium {
+    font-family: var(--font-body);
+    color: var(--color-ink-2);
+    line-height: 1.65;
+    font-size: var(--step-0);
+    max-width: 68ch;
+
+    * { font-family: inherit; }
+    h2, h3 { font-family: var(--font-display); text-transform: uppercase; color: var(--color-ink); line-height: 1.15; scroll-margin-top: 7rem; font-style: normal; }
+    h2 { font-size: var(--step-2); margin: 2.5rem 0 .75rem; }
+    h3 { font-size: var(--step-1); letter-spacing: .02em; margin: 1.75rem 0 .5rem; }
+    p { margin: 0 0 1rem; }
+    strong { color: var(--color-ink); font-weight: 700; }
+    a { color: var(--color-ice); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: oklch(var(--ice-lch) / .45); }
+    a:hover { text-decoration-color: var(--color-ice); color: var(--color-ink); }
+    ul { list-style: disc; padding-left: 1.25rem; margin: 0 0 1rem; }
+    ol { list-style: decimal; padding-left: 1.25rem; margin: 0 0 1rem; }
+    li { margin: .3rem 0; }
+    li::marker { color: var(--color-frost); }
+    table { width: 100%; border-collapse: collapse; margin: 0 0 1.25rem; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
+    th { text-align: left; color: var(--color-ink); font-weight: 700; }
+    th, td { padding: .6rem .75rem; border-bottom: 1px solid var(--color-rule); vertical-align: top; }
+    hr { border: 0; height: 1px; background: var(--color-rule); margin: 2rem 0; }
+    code, kbd { background: var(--color-paper); border: 1px solid var(--color-rule); padding: .05rem .4rem; border-radius: 4px; font-size: .9em; color: var(--color-ink); }
+}
+
+// ---------------------------------------------------------------------------
+// Surfaces: translucent navy glass, like the game client (kept by request over Hallmark's solid default).
+// Elevation still reads by lightness: content < structure < raised.
+// ---------------------------------------------------------------------------
+.glass, .glass-strong, .glass-raised {
+    border: 1px solid var(--color-rule);
+    border-top-color: var(--color-rule-strong); // light catching the top edge
+    border-radius: var(--radius-card);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+.glass { background: oklch(var(--paper-2-lch) / .62); box-shadow: 0 10px 30px -12px oklch(8% 0.03 272 / .55); }          // content glass
+.glass-strong { background: oklch(var(--paper-3-lch) / .8); box-shadow: 0 14px 36px -14px oklch(8% 0.03 272 / .65); }   // structure glass
+.glass-raised { background: oklch(var(--paper-4-lch) / .9); box-shadow: 0 16px 40px -16px oklch(8% 0.03 272 / .75); }
+
+// Floating layer over content (nav pill, menus, modals): the only place blur is allowed.
+.glass-overlay {
+    background: oklch(var(--paper-3-lch) / .72);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    border: 1px solid var(--color-rule-strong);
+    box-shadow: 0 10px 30px -14px oklch(8% 0.03 272 / .8);
+}
+
+.panel-inset {
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: 10px;
+}
+
+// Interactive card: one signal (edge + surface lighten). No lift, no glow.
+.card-link {
+    transition: border-color var(--dur-short) var(--ease-out), background-color var(--dur-short) var(--ease-out);
+    &:hover { border-color: var(--color-rule-strong); background-color: oklch(var(--paper-4-lch) / .7); }
+    &:active { transform: scale(.995); transition-duration: var(--dur-micro); }
+}
+
+// Rival accent (via --accent): a crisp border, never a coloured halo.
+.accent-ring { border-color: var(--accent, var(--color-rule-strong)) !important; box-shadow: inset 0 0 0 1px var(--accent, transparent); }
+
+.divider { height: 1px; background: var(--color-rule); border: 0; }
+
+// ---------------------------------------------------------------------------
+// Buttons — flat and calm (reference: Riot / Blizzard sites). The brand's split two-tone is kept
+// only as a faint 4% lightness step. 56 / 52 / 48 / 40 px ladder.
+// ---------------------------------------------------------------------------
+:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.button {
+    --btn-top: oklch(31% 0.08 276);
+    --btn-bottom: oklch(28% 0.08 276);
+    position: relative;
+    justify-content: center;
+    white-space: nowrap;
+    min-height: 48px;
+    border-radius: 4px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--color-ink);
+    background: linear-gradient(180deg, var(--btn-top) 0 50%, var(--btn-bottom) 50% 100%);
+    border: 1px solid oklch(var(--ink-lch) / .14);
+    transition: transform var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out), filter var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+
+    &:hover:not([disabled]) { filter: brightness(1.1); }
+    &:active:not([disabled]) { transform: scale(.98); }
+
+    &.main {
+        --btn-top: var(--color-accent);
+        --btn-bottom: oklch(56.5% 0.148 50);
+        color: var(--color-accent-ink);
+        border-color: transparent;
+        min-height: 56px;
+    }
+    // Hero framing (Riot detail): a thin frame 4px outside the button, no glow.
+    &.main.is-framed { box-shadow: 0 0 0 4px var(--color-paper), 0 0 0 5px oklch(var(--ink-lch) / .55); }
+    &.secondary { --btn-top: var(--color-royal); --btn-bottom: oklch(36% 0.138 321); border-color: transparent; min-height: 52px; }
+    &.frost { --btn-top: oklch(var(--frost-lch) / .2); --btn-bottom: oklch(var(--frost-lch) / .16); border-color: oklch(var(--frost-lch) / .45); }
+    &.no-back { background: transparent; border: 1px solid oklch(var(--ink-lch) / .35); }
+    &.no-back:hover:not([disabled]) { border-color: var(--color-ink); filter: none; background: oklch(var(--ink-lch) / .06); }
+    &.is-sm { min-height: 40px; letter-spacing: .07em; }
+    &.is-lg { min-height: 60px; }
+
+    &[disabled] {
+        --btn-top: oklch(36% 0.02 276); --btn-bottom: oklch(34% 0.02 276);
+        color: oklch(var(--ink-lch) / .5);
+        border-color: transparent;
+        cursor: not-allowed;
+    }
+}
+
+.keycap {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.9em;
+    height: 1.9em;
+    padding: 0 .45em;
+    font-family: var(--font-body);
+    font-size: .8em;
+    font-weight: 700;
+    color: var(--color-ink);
+    background: var(--color-paper-4);
+    border: 1px solid var(--color-rule-strong);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .3rem .75rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-rule-strong);
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    color: var(--color-ink-2);
+    background: var(--color-paper);
+    white-space: nowrap;
+}
+
+// Segmented control (filters): selected = filled frost.
+.segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: 4px;
+    gap: 4px;
+    border-radius: 10px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+
+    button {
+        min-height: 44px;
+        padding: 0 1.1rem;
+        border-radius: 7px;
+        font-family: var(--font-display);
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        font-size: var(--step--1);
+        color: var(--color-ink-2);
+        transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+
+        &:hover { color: var(--color-ink); background: oklch(var(--ice-lch) / .1); }
+        &[aria-pressed="true"], &[aria-selected="true"] { color: var(--color-paper); background: var(--color-frost); }
+    }
+}
+
+.field-input {
+    font-family: var(--font-body);
+    width: 100%;
+    min-height: 48px;
+    background: var(--color-field);
+    color: var(--color-field-ink);
+    border: 1px solid oklch(var(--paper-lch) / .6);
+    border-radius: var(--radius-input);
+    padding: .6rem .8rem;
+    font-size: var(--step-0);
+    transition: border-color var(--dur-micro) var(--ease-out);
+
+    &::placeholder { color: oklch(36.3% 0.047 268 / .6); }
+    &:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; border-color: var(--color-ice); }
+    &[aria-invalid="true"] { border-color: var(--color-danger); outline-color: var(--color-danger); }
+    &:disabled, &[readonly] { opacity: .6; cursor: not-allowed; }
+}
+textarea.field-input { min-height: 9rem; resize: vertical; line-height: 1.5; }
+
+::selection { background: oklch(55% 0.08 260 / .75); color: var(--color-ink); }
+
+.meter {
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    overflow: hidden;
+
+    > span {
+        display: block;
+        height: 100%;
+        width: 100%;
+        border-radius: inherit;
+        background: var(--color-frost);
+        transform-origin: left center;
+        transition: transform var(--dur-long) var(--ease-out);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Feedback & motion
+// ---------------------------------------------------------------------------
+.skeleton {
+    background: linear-gradient(90deg, oklch(var(--ice-lch) / .06), oklch(var(--ice-lch) / .14), oklch(var(--ice-lch) / .06));
+    background-size: 200% 100%;
+    animation: skeleton 1.4s linear infinite; // functional loader: the only allowed loop
+    border-radius: 8px;
+}
+@keyframes skeleton { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+// One orchestrated entrance per page; stagger by --i (capped by design to ~4 items).
+@keyframes rise-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.rise-in { animation: rise-in var(--dur-long) var(--ease-out) both; animation-delay: calc(var(--i, 0) * 70ms); }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: fade-in var(--dur-short) var(--ease-out) both; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 150ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 150ms !important;
+        scroll-behavior: auto !important;
+    }
+    .hero-depth { animation: none !important; }
+    .rise-in { animation-name: fade-in !important; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .glass-overlay, .glass, .glass-strong, .glass-raised { background: oklch(var(--paper-3-lch) / .97); backdrop-filter: none; }
+    .page-scrim { background: oklch(var(--paper-lch) / .85) !important; }
+}
+
+@media (prefers-contrast: more) {
+    :root { --color-rule: oklch(var(--rule-lch) / .5); --color-rule-strong: oklch(var(--rule-lch) / .85); --ink-3-lch: 85% 0.04 280; }
+    .glass, .glass-strong, .glass-raised { background: var(--color-paper); }
+}

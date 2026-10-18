@@ -1,12 +1,24 @@
-//Palette
-$COLOR_DARK: #030422;
-$COLOR_BACK: #02236b;
-$COLOR_NORMAL: #5478c7;
-$COLOR_LIGHT: #b2d6ff;
+// Rivalium palette. Token names match .agents/skills/rivalium-ui/references/palette.md.
 
-$COLOR_SPECIAL: #8a5fcf;
-$COLOR_GREEN: #44C046;
+// Brand core
+$COLOR_DARK: #030422;     // night
+$COLOR_BACK: #02236b;     // abyss
+$COLOR_NORMAL: #5478c7;   // steel
+$COLOR_LIGHT: #b2d6ff;    // ice
+$COLOR_GLASS: #141542;    // navy-glass (client panel base)
+$COLOR_LAVENDER: #b4baf2; // lavender (text on glass)
+$COLOR_FROST: #96bdff;    // frost (interactive fill, scrollbar)
+
+// Title gradient + accents
+$COLOR_SPECIAL: #8a5fcf;  // amethyst
+$COLOR_YELLOW: #fdcd6b;   // gold
+$COLOR_MID: #c593a0;      // rose
 $COLOR_WHITE: #ffffff;
-$COLOR_YELLOW: #fdcd6b;
-$COLOR_MID: #c593a0;
 
+// Semantic
+$COLOR_GREEN: #44C046;    // success
+$COLOR_DANGER: #ff9999;   // danger (text)
+
+// Light field on dark glass (mirrors the client LineEdit)
+$COLOR_FIELD: #dee7fc;
+$COLOR_FIELD_TEXT: #333d57;

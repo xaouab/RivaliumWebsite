@@ -15,14 +15,14 @@ interface ProgressBarProps {
 const stateToColorClass = (state: ProgressState) => {
     switch (state) {
         case ProgressState.OK:
-            return "bg-green-400";
+            return "bg-success";
         case ProgressState.ERROR:
-            return "bg-red-400";
+            return "bg-danger";
         case ProgressState.REACHED:
-            return "bg-sky-200";
+            return "bg-frost";
         case ProgressState.NOT_REACHED:
         default:
-            return "bg-sky-200/30";
+            return "bg-ice/25";
     }
 };
 
@@ -32,7 +32,7 @@ const ProgressBarComponent: React.FC<ProgressBarProps> = ({ states }) => {
     useEffect(() => {
         refs.current.forEach((ref, index) => {
             if (!ref) return;
-            ref.classList.remove("bg-green-400", "bg-red-400", "bg-sky-200", "bg-sky-200/30");
+            ref.classList.remove("bg-success", "bg-danger", "bg-frost", "bg-ice/25");
             void ref.offsetWidth;
             ref.classList.add(stateToColorClass(states[index]));
         });
@@ -46,7 +46,7 @@ const ProgressBarComponent: React.FC<ProgressBarProps> = ({ states }) => {
                     ref={el => {
                         if (el) refs.current[index] = el;
                     }}
-                    className="w-8 md:w-12 h-2 rounded transition-colors duration-[1s] bg-sky-200/30"
+                    className="w-8 md:w-12 h-2 rounded transition-colors duration-[1s] bg-ice/25"
                 />
             ))}
         </div>

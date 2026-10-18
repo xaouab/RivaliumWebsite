@@ -2,6 +2,7 @@ import {animated, easings, useSpring} from "react-spring";
 import {useTransitionContext} from "@/contexts/TransitionContext";
 
 export interface AnimatedBackgroundProps {
+    /** Route patterns (router.pathname) that show this background. "/wiki*" also matches "/wiki/...". */
     namespace?: string | string[];
     animation?: object, // Change type to `object` if not using SpringValues
     onOpen?: [Record<any, any>, Record<any, any>],
@@ -21,9 +22,12 @@ export default function AnimatedBackground({
 
     const { location } = useTransitionContext();
 
-    const inNamespace = (namespace instanceof Array) 
-        ? namespace.includes(location)
-        : (namespace === undefined || namespace === location);
+    // A namespace ending in "*" matches that path and everything under it.
+    const matches = (pattern: string) => pattern.endsWith("*")
+        ? location === pattern.slice(0, -1) || location.startsWith(pattern.slice(0, -1) + "/")
+        : location === pattern;
+    const inNamespace = namespace === undefined
+        || (namespace instanceof Array ? namespace.some(matches) : matches(namespace));
 
     const style: Record<any, any> = { opacity: inNamespace ? 1 : 0 };
     for(const key in onOpen[0]) {
@@ -42,7 +46,7 @@ export default function AnimatedBackground({
                 position: 'absolute',
                 top: 0,
                 left: 0,
-                width: '100vw',
+                width: '100%',
                 height: '100vh',
                 overflow: 'hidden'
             }}
@@ -52,7 +56,7 @@ export default function AnimatedBackground({
                     ...animation,
                     position: 'absolute',
                     zIndex: 1,
-                    width: '100vw',
+                    width: '100%',
                     height: '100vh',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',

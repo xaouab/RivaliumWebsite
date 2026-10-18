@@ -1,11 +1,10 @@
-export default function Input({ className, ...props }: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>) {
+import { forwardRef } from "react";
 
-    return <input
-        {...props}
-        className={
-            "secondary-text bg-zinc-100/[0.8] text-zinc-600 placeholder-zinc-800/[0.5] text-xs sm:text-sm md:text-lg p-2 border border-zinc-800/[0.6] focus:outline-none focus:border-sky-400"
-            + " " + className
-        }
-    />
+type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-}
+/** Light field on dark glass, matching the client's LineEdit. Prefer `ui/Field` when you need a label. */
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ className = "", ...props }, ref) {
+    return <input ref={ref} {...props} className={`field-input ${className}`} />;
+});
+
+export default Input;

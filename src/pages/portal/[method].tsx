@@ -1,393 +1,220 @@
-import Logo from "@/assets/images/logo/logo.webp";
-import Button from "@/components/Button";
-import Input from "@/components/Input";
-import ProgressBar, { ProgressState } from "@/components/ProgressBar";
-import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { FaCheckCircle, FaCopy, FaEnvelope, FaExternalLinkAlt, FaGoogle, FaSignInAlt } from "react-icons/fa";
-import { FaArrowLeftLong, FaArrowRightLong, FaCircleXmark } from "react-icons/fa6";
+import { FormEvent, useEffect, useState } from "react";
+import { FaArrowLeftLong, FaArrowRightLong, FaCircleCheck, FaCircleXmark, FaEnvelope, FaRightToBracket } from "react-icons/fa6";
+import Button from "@/components/Button";
+import Field from "@/components/ui/Field";
+import Notice from "@/components/ui/Notice";
+import ProgressBar, { ProgressState } from "@/components/ProgressBar";
+import PortalShell from "@/components/portal/PortalShell";
+import { useAuth } from "@/contexts/AuthContext";
+import { api, ApiError } from "@/lib/api";
 
-interface FormProps {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    termsAccepted: boolean;
-    accountUpdates: boolean;
-    gameUpdates: boolean;
+// Mirrors accounts/src/macros.ts so problems show while typing; the server re-checks everything.
+const usernameRegex = /^[A-Za-z0-9_-]{5,16}$/;
+const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,8}$/;
+const passwordRules = [
+    { test: (value: string) => value.length >= 8 && value.length <= 30, label: "8 to 30 characters" },
+    { test: (value: string) => /[A-Za-z]/.test(value), label: "At least one letter" },
+    { test: (value: string) => /\d/.test(value), label: "At least one number" },
+    { test: (value: string) => /[^A-Za-z\d]/.test(value), label: "At least one special character" },
+];
+
+/** Only same-site paths are allowed as a post-sign-in destination. */
+function safeNext(value: unknown) {
+    return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") ? value : "/account";
 }
-
-type Errors = Partial<Record<keyof FormProps, any>>;
 
 export default function Portal() {
     const router = useRouter();
-    const { method } = router.query;
-    const isLogin = method == "login";
-    const isRegister = method == "register";
-    const goToLogin = () => router.replace("/portal/login");
-    const goToRegister = () => router.replace("/portal/register");
+    const method = router.query.method;
+    if (!router.isReady) return null;
+    if (method === "register") return <Register />;
+    return <SignIn />;
+}
 
-    const [fade, setFade] = useState(true);
-    const [transitioning, setTransitioning] = useState(false);
+function SignIn() {
+    const router = useRouter();
+    const { signIn, status } = useAuth();
+    const [access, setAccess] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
+    const [pending, setPending] = useState(false);
+    const next = safeNext(router.query.next);
 
+    useEffect(() => { if (status === "signed-in") router.replace(next); }, [status, next, router]);
 
-    // Multi-step form state
-    const [step, setStep] = useState(1);
-    const [targetStep, setTargetStep] = useState(1);
-    const [stepStates, setStepStates] = useState<ProgressState[]>(
-        [ProgressState.REACHED, ...Array(5).fill(ProgressState.NOT_REACHED)]
-    );
-    const [formData, setFormData] = useState<FormProps>({
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        termsAccepted: false,
-        accountUpdates: true,
-        gameUpdates: true,
-    });
-    const [error, setError] = useState<string>("");
-
-    // Regex patterns
-    const usernameRegex = /^[A-Za-z0-9_-]{5,16}$/;
-    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,8}$/;
-    const passwordLengthRegex = /^.{8,30}$/;
-    const passwordLetterRegex = /[A-Za-z]/;
-    const passwordNumberRegex = /\d/;
-    const passwordSpecialCharRegex = /[^A-Za-z\d]/;
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,30}$/;
-
-    const updateStepStates = (newStep: number, state: ProgressState) => {
-        setStepStates((prevStates) => {
-            const newStates = [...prevStates];
-            newStates[newStep - 1] = state;
-            return newStates;
-        });
-    }
-
-    // Validation functions
-    const validateStep = () => {
-        let newError: string = "";
-        if (step === 1 && !usernameRegex.test(formData.username)) {
-            newError = "Username must be between 5 and 16 characters long, must include only characters, numbers, underscore and hyphen.";
-        }
-        if (step === 2 && !emailRegex.test(formData.email)) {
-            newError = "Please enter a valid email address";
-        }
-        if (step === 3) {
-            if (!passwordRegex.test(formData.password)) {
-                newError = "Password must be between 8 and 30 characters long, must include at least one letter, number and special character.";
-            }
-            if (formData.password !== formData.confirmPassword) {
-                newError = "Passwords do not match";
-            }
-        }
-        if (step === 4 && !formData.termsAccepted) {
-            newError = "You must accept the Terms of Service";
-        }
-        setError(newError);
-        return newError === "";
-    };
-
-    // Handle input changes
-    const handleInputChange = (e: any) => {
-        const { name, value, type, checked } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === "checkbox" ? checked : value,
-        });
-    };
-
-    const nextStep = () => {
-        if (transitioning) return;
-        setTransitioning(true);
-        // after fade-in:
-        setTimeout(() => setTransitioning(false), 2000);
-        if (validateStep()) {
-            setTargetStep(step + 1);
-            updateStepStates(step, ProgressState.OK);
-            updateStepStates(step + 1, ProgressState.REACHED);
-            setFade(false); // Start fade out
-            setTimeout(() => {
-                setStep((prev) => prev + 1);
-                // Wait one frame to allow React to re-render with new step and opacity-0
-                setTimeout(() => setFade(true), 10); // Trigger fade in
-            }, 1000); // Match duration of fade-out (or slightly less than 500ms)
-        } else {
-            updateStepStates(step, ProgressState.ERROR);
+    const submit = async (event: FormEvent) => {
+        event.preventDefault();
+        if (!access || !password) return setError("Enter your username or email and your password.");
+        setPending(true); setError(null);
+        try {
+            await signIn(access.trim(), password);
+            router.replace(next);
+        } catch (failure) {
+            setError(failure instanceof ApiError ? failure.message : "Something went wrong. Please try again.");
+            setPending(false);
         }
     };
 
-    const prevStep = () => {
-        if (transitioning) return;
-        setTransitioning(true);
-        // after fade-in:
-        setTimeout(() => setTransitioning(false), 2000);
-        updateStepStates(step, ProgressState.NOT_REACHED);
-        setTargetStep(step - 1);
-        setFade(false);
-        setTimeout(() => {
-            setStep((prev) => prev - 1);
-            // Wait one frame to allow React to re-render with new step and opacity-0
-            setTimeout(() => setFade(true), 10); // Trigger fade in
-        }, 1000);
+    return <PortalShell pageTitle="Sign in" heading="Sign in" word="LOGIN" intro={<>Sign in to your <span className="display text-gradient">Rivalium</span> account.</>}>
+        <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+            {error && <Notice tone="error">{error}</Notice>}
+            <Field label="Username or email" name="access" autoComplete="username" value={access} onChange={event => setAccess(event.target.value)} autoFocus />
+            <Field
+                label="Password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={event => setPassword(event.target.value)}
+                aside={<Link href="/portal/forgot" className="font-body text-sm text-ice hover:text-ink">Forgot password?</Link>}
+            />
+            <Button submit type="main" content="Sign in" Icon={FaRightToBracket} loading={pending} className="w-full !mx-0 mt-2" />
+        </form>
+        <p className="font-body text-center text-lavender/80">
+            New to Rivalium? <Link href={{ pathname: "/portal/register", query: router.query.next ? { next: router.query.next } : {} }} className="text-ice hover:text-ink underline underline-offset-4">Create an account</Link>
+        </p>
+    </PortalShell>;
+}
+
+type Step = 1 | 2 | 3 | 4 | 5;
+const stepTitles: Record<Step, string> = {
+    1: "Choose a name for your Rival",
+    2: "What's your email address?",
+    3: "Choose a secure password",
+    4: "Almost there",
+    5: "Check your inbox",
+};
+
+function Register() {
+    const router = useRouter();
+    const { register, status, user, token } = useAuth();
+    const [step, setStep] = useState<Step>(1);
+    const [form, setForm] = useState({ username: "", email: "", password: "", confirm: "", acceptedTOS: false, ageConfirmed: false, emailConsent: true, marketingConsent: false });
+    const [error, setError] = useState<string | null>(null);
+    const [pending, setPending] = useState(false);
+    const [resent, setResent] = useState(false);
+
+    useEffect(() => { if (status === "signed-in" && step < 5) router.replace("/account"); }, [status, step, router]);
+
+    const set = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement>) =>
+        setForm(current => ({ ...current, [key]: event.target.type === "checkbox" ? event.target.checked : event.target.value }));
+
+    const stepError = (): string | null => {
+        if (step === 1 && !usernameRegex.test(form.username)) return "Usernames are 5 to 16 letters, numbers, underscores or hyphens.";
+        if (step === 2 && !emailRegex.test(form.email)) return "Enter a valid email address.";
+        if (step === 3 && !passwordRules.every(rule => rule.test(form.password))) return "Your password doesn't meet every rule yet.";
+        if (step === 3 && form.password !== form.confirm) return "Passwords don't match.";
+        if (step === 4 && !form.ageConfirmed) return "Rivalium is for players 16 or older, or younger players with a parent's consent.";
+        if (step === 4 && !form.acceptedTOS) return "Accept the Terms of Service to create your account.";
+        return null;
     };
 
-    // Form content for each step
-    const renderStep = () => {
-        const texts = [
-            'Choose a name for your Rival',
-            'What\'s your email address?',
-            'Choose a secure password',
-            'Almost there...',
-            'Please check your email for a verification link',
-            'Account created successfully!'
-        ]
-        let stepElement = <></>;
-        switch (step) {
-            case 1:
-                stepElement = (
-                    <>
-                        <Input
-                            type="text"
-                            name="username"
-                            className="w-full"  
-                            placeholder="Username"
-                            value={formData.username}
-                            onChange={handleInputChange}
-                            required
-                        />
-                    </>
-                );
-                break;
-            case 2:
-                stepElement = (
-                    <>
-                        <Input
-                            type="email"
-                            name="email"
-                            placeholder="Email"
-                            className="w-full"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                        />
-                    </>
-                );
-                break;
-            case 3:
-                const tests = [
-                    { regex: passwordLengthRegex, message: "Between 8 and 30 characters long." },
-                    { regex: passwordLetterRegex, message: "Include at least one letter." },
-                    { regex: passwordNumberRegex, message: "Include at least one number." },
-                    { regex: passwordSpecialCharRegex, message: "Include at least one special character." }
-                ]
-                const passwordsMatch = formData.password && formData.password === formData.confirmPassword;
-                stepElement = (
-                    <>
-                        <Input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            className="w-full"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            required
-                        />
-                        <Input
-                            type="password"
-                            name="confirmPassword"
-                            placeholder="Password one more time"
-                            value={formData.confirmPassword}
-                            className="w-full"
-                            onChange={handleInputChange}
-                            required
-                        />
-                        <div className="flex flex-col items-start space-y-1 my-4 w-full text-xs md:text-sm">
-                        {
-                            tests.map((test, index) => {
-                                const valid = test.regex.test(formData.password);
-                                return <p key={index} className={`secondary-text inline-flex items-center space-x-2 transition-colors duration-700 ${valid ? "text-green-300" : "text-red-400"}`}>
-                                    {valid ? <FaCheckCircle/> : <FaCircleXmark/>} <span>{test.message}</span>
-                                </p>
-                            })
-                        }
-                        <p className={`secondary-text inline-flex items-center space-x-2 transition-colors duration-700 ${passwordsMatch ? "text-green-300" : "text-red-400"}`}>
-                            <FaCopy/> <span>Passwords must match.</span>
-                        </p>
-                        </div>
-                    </>
-                );
-                break;
-            case 4:
-                stepElement = (
-                    <>
-                        <label className="flex items-center space-x-2 text-sky-200/[0.7] text-md secondary-text">
-                            <input
-                                type="checkbox"
-                                name="termsAccepted"
-                                checked={formData.termsAccepted}
-                                onChange={handleInputChange}
-                                className="form-checkbox text-sky-200"
-                            />
-                            <span>
-                                I agree to the{" "}
-                                <Link href="/legal/terms" target="_blank" className="text-sky-200 hover:text-white inline-flex items-center">
-                                    Terms of Service <FaExternalLinkAlt className="text-xs mx-1"/>
-                                </Link>
-                            </span>
-                        </label>
-                        <label className="flex items-center space-x-2 text-sky-200/[0.7] text-md secondary-text mt-2">
-                            <input
-                                type="checkbox"
-                                defaultChecked
-                                name="accountUpdates"
-                                checked={formData.accountUpdates}
-                                onChange={handleInputChange}
-                                className="form-checkbox text-sky-200"
-                            />
-                            <span>Receive account updates and notifications by email</span>
-                        </label>
-                        <label className="flex items-center space-x-2 text-sky-200/[0.7] text-md secondary-text mt-2">
-                            <input
-                                type="checkbox"
-                                name="gameUpdates"
-                                defaultChecked
-                                checked={formData.gameUpdates}
-                                onChange={handleInputChange}
-                                className="form-checkbox text-sky-200"
-                            />
-                            <span>Receive game updates and patch notes</span>
-                        </label>
-                    </>
-                );
-                break;
-            case 5:
-                stepElement = (
-                    <>
-                        <FaEnvelope className="text-[6rem] text-sky-200 animate-pulse"/>
-                        <p className="text-sky-200/[0.7] text-sm md:text-md text-center my-5 secondary-text">
-                            Can't find it? Check your spam folder or <a href="#" className="text-sky-200 hover:text-white">Resend mail</a>.
-                        </p>
-                    </>
-                );
-                break;
-            case 6:
-                stepElement = (
-                    <>
-                        <Button
-                            type="main"
-                            content="GO TO LOGIN"
-                            Icon={FaSignInAlt}
-                            onClick={goToLogin}
-                        />
-                    </>
-                );
-                break;
-            default:
-                return null;
-        }
-        return <>
-            <p className="text-sky-200/[0.7] text-sm md:text-lg text-center my-4 secondary-text">
-                {texts[step - 1]}
-            </p>
-            {stepElement}
+    const advance = async (event: FormEvent) => {
+        event.preventDefault();
+        const problem = stepError();
+        if (problem) return setError(problem);
+        setError(null);
+        if (step < 4) return setStep((step + 1) as Step);
 
-            {step <= 4 && <div className="flex flex-row justify-center w-full">
-                {step > 1 && <Button type="no-back" onClick={prevStep} Icon={FaArrowLeftLong} />}
-                <Button type="main" onClick={nextStep} Icon={FaArrowRightLong} />
+        setPending(true);
+        try {
+            await register({
+                username: form.username, email: form.email, password: form.password,
+                acceptedTOS: form.acceptedTOS, emailConsent: form.emailConsent, marketingConsent: form.marketingConsent,
+            });
+            setStep(5);
+        } catch (failure) {
+            const message = failure instanceof ApiError ? failure.message : "Something went wrong. Please try again.";
+            setError(message);
+            // Send the player back to the step the server complained about.
+            if (/username/i.test(message)) setStep(1);
+            else if (/email/i.test(message)) setStep(2);
+            else if (/password/i.test(message)) setStep(3);
+        } finally {
+            setPending(false);
+        }
+    };
+
+    const resend = async () => {
+        try {
+            await api("/verify-email/resend", { method: "POST", token });
+            setResent(true);
+        } catch (failure) {
+            setError(failure instanceof ApiError ? failure.message : "Couldn't resend the email.");
+        }
+    };
+
+    const states = ([1, 2, 3, 4, 5] as Step[]).map(index =>
+        index < step ? ProgressState.OK : index === step ? (error ? ProgressState.ERROR : ProgressState.REACHED) : ProgressState.NOT_REACHED);
+
+    return <PortalShell pageTitle="Create an account" heading="Create an account" word="REGISTER" intro={<>Welcome to <span className="display text-gradient">Rivalium</span>. Let&apos;s get you set up.</>}>
+        <ProgressBar states={states} />
+        <p className="font-body text-center text-ice" aria-live="polite">Step {step} of 5: {stepTitles[step]}</p>
+
+        {step < 5 && <form key={step} onSubmit={advance} className="flex flex-col gap-4 rise-in" noValidate>
+            {error && <Notice tone="error">{error}</Notice>}
+
+            {step === 1 && <Field autoFocus label="Username" name="username" autoComplete="username" value={form.username} onChange={set("username")}
+                hint="5 to 16 characters. This is also your starting display name; you can change it later." />}
+
+            {step === 2 && <Field autoFocus label="Email" name="email" type="email" autoComplete="email" value={form.email} onChange={set("email")}
+                hint="We'll send a link to confirm it." />}
+
+            {step === 3 && <>
+                <Field autoFocus label="Password" name="password" type="password" autoComplete="new-password" value={form.password} onChange={set("password")} />
+                <Field label="Confirm password" name="confirm" type="password" autoComplete="new-password" value={form.confirm} onChange={set("confirm")} />
+                <ul className="font-body text-sm flex flex-col gap-1" aria-label="Password rules">
+                    {[...passwordRules.map(rule => ({ ok: rule.test(form.password), label: rule.label })), { ok: !!form.password && form.password === form.confirm, label: "Both passwords match" }]
+                        .map(rule => <li key={rule.label} className={`flex items-center gap-2 transition-colors ${rule.ok ? "text-success" : "text-lavender/80"}`}>
+                            {rule.ok ? <FaCircleCheck aria-hidden /> : <FaCircleXmark aria-hidden />} {rule.label}
+                            <span className="sr-only">{rule.ok ? "(met)" : "(not met)"}</span>
+                        </li>)}
+                </ul>
+            </>}
+
+            {step === 4 && <div className="flex flex-col gap-3 font-body text-lavender/90">
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" className="mt-1 w-4 h-4 accent-frost" checked={form.acceptedTOS} onChange={set("acceptedTOS")} />
+                    <span>I agree to the <Link href="/legal/terms" target="_blank" className="text-ice underline underline-offset-4">Terms of Service</Link> and have read the <Link href="/legal/privacy" target="_blank" className="text-ice underline underline-offset-4">Privacy Policy</Link>.</span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" className="mt-1 w-4 h-4 accent-frost" checked={form.ageConfirmed} onChange={set("ageConfirmed")} />
+                    <span>I&apos;m 16 or older, or a parent or guardian has agreed to these terms for me.</span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" className="mt-1 w-4 h-4 accent-frost" checked={form.emailConsent} onChange={set("emailConsent")} />
+                    <span>Email me about my account and game updates</span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" className="mt-1 w-4 h-4 accent-frost" checked={form.marketingConsent} onChange={set("marketingConsent")} />
+                    <span>Send me news and offers</span>
+                </label>
+                <p className="text-sm text-lavender/80">You can change these anytime in your account preferences.</p>
             </div>}
-            <p className="text-red-400 text-sm md:text-md my-2 secondary-text">{error}</p>
-        </>
-    };
 
-    return (
-        <>
-            <Head>
-                <title>Portal - Rivalium: The Realm of Rivals</title>
-            </Head>
-            <main className="w-full h-screen min-h-screen relative flex justify-center items-center">
-                <div className="w-full h-full flex flex-col-reverse md:flex-row items-center justify-between">
-                    <div
-                        className={`h-full w-full md:h-[100%] sm:w-[60%] xl:w-[35%] bg-gradient-to-t md:bg-gradient-to-br from-backblue/90 via-sky-700/90 to-sky-700/10 md:to-sky-700/90 shadow-xl/40 p-4 sm:p-5 flex flex-col justify-between items-center`}
-                    >
-                        <div className="w-full flex flex-col items-center space-y-2 md:mb-4 mt-6 py-6">
-                            <h1 className="text-4xl lg:text-6xl text-sky-200/[0.7] md:mb-6">
-                                {isLogin ? 'LOG IN' : 'REGISTER FORM'}
-                            </h1>
-                            {isLogin ? (
-                                <p className="text-sky-200/[0.7] text-xs sm:text-sm md:text-xl text-center my-10 secondary-text">
-                                    Sign in to access your <span className="title text-lg sm:text-xl md:text-2xl">Rivalium</span> account.
-                                </p>
-                            ) : (
-                                <p className="text-sky-200/[0.7] text-xs sm:text-sm md:text-xl text-center secondary-text">
-                                    Welcome to <span className="title text-lg sm:text-xl md:text-2xl">Rivalium</span>
-                                    <br/>
-                                    <br/>
-                                    Let's get you set up!
-                                </p>
-                            )}
-                            </div>
-                        
-                        {!isLogin && (
-                            <div className="w-[80%] flex flex-col items-center space-y-4 md:space-y-10 my-4 h-[45%] md:h-[60%]">     
-                                <ProgressBar states={stepStates} />
-                                <div 
-                                key={step}
-                                className={`flex flex-col items-center space-y-2 w-full relative transition-opacity duration-1000 ${fade ? "opacity-100" : "opacity-0"}`}>
-                                    {renderStep()}
-                                </div>
-                            </div>
-                        )}
-                        {isLogin && <div className="flex flex-col justify-center items-center w-full sm:w-[80%]">
-                            <form className="w-full flex flex-col items-center space-y-3">
-                                <Input type="username" placeholder="Username or Email" className="w-full" required />
-                                <Input type="password" placeholder="Password" className="w-full" required />
-                                <div className='flex flex-row items-between'>
-                                    <Button type="main" content="SIGN IN" Icon={FaSignInAlt} />
-                                    <Button
-                                        type="main"
-                                        content="SIGN IN WITH GOOGLE"
-                                        Icon={FaGoogle}
-                                        disabled
-                                    />
-                                </div>
-                            </form>
-                            
-                            <p className="text-sky-200/[0.7] text-xs sm:text-xs md:text-sm text-center mt-4 secondary-text">
-                                Forgot password?{" "}
-                                <Link href="/portal/reset-password" className="hover:text-sky-100">
-                                    Reset it
-                                </Link>
-                            </p>
-                            <hr className="border-sky-200/[0.2] mt-1 mb-4 w-full" />
-                            <Button
-                                type="secondary"
-                                content="REGISTER"
-                                onClick={goToRegister}
-                            />
-                        </div>}
-                        <div className="text-sky-200/[0.7]">
-                            <ul className="text-xs md:text-sm secondary-text flex flex-row justify-center space-x-2">
-                                <li><a href="/" className="hover:text-white">Home</a></li>
-                                <li><a href="/legal/terms" className="hover:text-white">Terms of Service</a></li>
-                                <li><a href="/patch-notes" className="hover:text-white">Server Status</a></li>
-                                <li><a href="/support" className="hover:text-white">Support</a></li>
-                            </ul>
-                        </div>
-                    </div>
+            <div className="flex justify-between items-center mt-2">
+                {step > 1
+                    ? <Button type="no-back" content="Back" Icon={FaArrowLeftLong} onClick={() => { setError(null); setStep((step - 1) as Step); }} className="!mx-0" />
+                    : <span />}
+                <Button submit type="main" content={step === 4 ? "Create account" : "Next"} Icon={step === 4 ? undefined : FaArrowRightLong} loading={pending} className="!mx-0" />
+            </div>
+        </form>}
 
-                    <div className="hidden sm:w-[25%] md:flex md:h-full flex-col justify-between md:items-end p-10">
-                        <Image src={Logo} alt="Rivalium Logo" className="w-[150px] sm:w-[300px] xl:w-[400px] filter drop-shadow-2xl/50" />
-                        <h1 className="hidden md:inline text-right text-[2.6rem] sm:text-[6rem] xl:text-[7rem] text-center gloss-text">
-                            {isLogin ? `LOGIN` : `REGISTER`}
-                        </h1>
-                    </div>
-                </div>
-            </main>
-        </>
-    );
+        {step === 5 && <div className="flex flex-col items-center gap-4 text-center rise-in">
+            <FaEnvelope aria-hidden className="text-6xl text-ice" />
+            <p className="font-body text-lavender/90">
+                We sent a confirmation link to <strong className="text-ink">{user?.email ?? form.email}</strong>. Open it to verify your address.
+            </p>
+            {resent ? <Notice tone="success">Sent again. It can take a minute to arrive.</Notice>
+                : <p className="font-body text-sm text-lavender/80">Nothing yet? Check your spam folder or <button type="button" onClick={resend} className="text-ice underline underline-offset-4 hover:text-ink">send it again</button>.</p>}
+            {error && <Notice tone="error">{error}</Notice>}
+            <Button type="main" content="Go to my account" href="/account" className="!mx-0" />
+        </div>}
+
+        {step < 5 && <p className="font-body text-center text-lavender/80">
+            Already have an account? <Link href="/portal/login" className="text-ice hover:text-ink underline underline-offset-4">Sign in</Link>
+        </p>}
+    </PortalShell>;
 }

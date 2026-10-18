@@ -1,26 +1,21 @@
-"use client";
-
-import {AppProps} from 'next/app';
+import { AppProps } from 'next/app';
+import { useRouter } from 'next/router';
+import '../../tokens.css';
 import '@/style/font.scss';
 import '@/style/global.scss';
 import Layout from '@/components/Layout';
-import { useRouter } from 'next/router';
-
-const NoLayout = ({children}: any) => <>{children}</>;
+import { AuthProvider } from '@/contexts/AuthContext';
 
 function App({ Component, pageProps }: AppProps) {
+    const { pathname } = useRouter();
+    // The portal pages are full-screen forms with their own navigation.
+    const chrome = !pathname.startsWith("/portal");
 
-    const {pathname: path} = useRouter();
-    let navbar = true, footer = true;
-    if (path.startsWith("/portal")) {
-        navbar = false;
-        footer = false;
-    }
-    return <><Layout navbar={navbar} footer={footer}>
-        <Component {...pageProps}/>
-    </Layout>
-    </>
-
+    return <AuthProvider>
+        <Layout navbar={chrome} footer={chrome}>
+            <Component {...pageProps} />
+        </Layout>
+    </AuthProvider>;
 }
 
 export default App;

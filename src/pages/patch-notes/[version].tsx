@@ -1,177 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import axios from 'axios';
-import { apiUrl } from '@/components/constant';
-import DefaultSplash from '@/assets/images/splash/patch-notes-splash.webp';
-import { FaPlus, FaMinus, FaTools, FaEdit, FaChevronRight, FaArrowRight, FaAdjust, FaExchangeAlt } from 'react-icons/fa';
-import { FaAngleRight } from "react-icons/fa6";
 import Head from 'next/head';
-
-type VersionDetails = {
-  version: string;
-  issuedAt: number;
-  issuedBy: { username: string };
-  changelog?: {
-    title?: string;
-    generalText: string;
-    level: string;
-    imageUrl?: string;
-    changes: Change[];
-  };
-  published: boolean;
-  publishedAt: number;
-  publishedBy: { username: string };
-};
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { IconType } from 'react-icons';
+import { FaArrowRight, FaChevronRight, FaMinus, FaPen, FaPlus, FaRightLeft, FaWrench } from 'react-icons/fa6';
+import DefaultSplash from '@/assets/images/splash/patch-notes-splash.webp';
+import Notice from '@/components/ui/Notice';
+import PageHeader from '@/components/ui/PageHeader';
+import { api, ApiError } from '@/lib/api';
+import { formatDate } from '@/lib/game';
 
 type Change = {
-  title?: string;
-  type: string;
-  description: string;
-  changes?: Change[];
-  oldValue?: string | number;
-  newValue?: string | number;
-};
-const ChangeTypeToScore: Record<string, number> = {
-    "category": 6,
-    "add": 5,
-    "adjust": 4,
-    "remove": 3,
-    "fix": 2,
-    "change": 1,
-}
-
-function sortVersion(changes: Change[]): Change[] {
-    return changes
-        .sort((c1, c2) => ((ChangeTypeToScore[c2.type] ?? 0) - (ChangeTypeToScore[c1.type] ?? 0)))
-        .map(change => {
-            change.changes = change.changes ? sortVersion(change.changes) : change.changes;
-            return change;
-        });
-}
-
-const VersionDetailsPage = () => {
-  const [versionDetails, setVersionDetails] = useState<VersionDetails | null>(null);
-  const router = useRouter();
-  const { version } = router.query;
-
-  useEffect(() => {
-    if (version) {
-      const fetchVersionDetails = async () => {
-        try {
-          const response = await axios.get(`${apiUrl}/version/${version}`);
-          const retrievedVersion = response.data;
-          if (retrievedVersion.changelog?.changes) {
-            retrievedVersion.changelog.changes = sortVersion(retrievedVersion.changelog.changes);
-          }
-          setVersionDetails(retrievedVersion);
-        } catch (error) {
-          router.push('/404');
-        }
-      };
-
-      fetchVersionDetails();
-    }
-  }, [version]);
-
-  if (!versionDetails) {
-    return <main className='w-full min-h-screen flex flex-col justify-content items-center'>
-        <div className="title text-center">Loading...</div>
-        </main>;
-  }
-
-  const renderChanges = (changes: Change[]) => {
-    return (
-      <ul className="list-none">
-        {changes.map((change, index) => (
-          <li key={index} className="mb-3 text-lightblue flex flex-col items-start">
-            <div className="flex items-center gap-2 mb-2"> 
-              {change.type === 'add' && <FaPlus className="text-green-300" />}
-              {change.type === 'remove' && <FaMinus className="text-red-400" />}
-              {change.type === 'fix' && <FaTools className="text-lightblue" />}
-              {change.type === 'change' && <FaEdit className="text-white" />}
-              {change.type === 'adjust' && <FaExchangeAlt className="text-lightblue" />}
-              {change.type === 'category' && <FaChevronRight className="text-white" />}
-              <span className="text-lg md:text-3xl">
-                {change.title || 'Unnamed Change'}
-              </span>
-            </div>
-            <div className="secondary-text text-sm md:text-xl flex flex-row items-center">
-              <p className="ml-6 pr-5">{change.description}</p>
-              {change.type === 'adjust' && change.newValue && change.oldValue && (
-                <>
-                  <p className="text-red-300 pr-2">{change.oldValue}</p>
-                  <FaArrowRight className="text-lightblue pr-2" />
-                  <p className="text-green-300 pr-2">{change.newValue}</p>
-                </>
-              )}
-            </div>
-            {change.changes && (
-              <div
-                className={`pl-4 ml-1.5 md:pl-10 py-2 md:pt-5 w-full ${
-                  change.type === 'category' ? 'border-l-2 border-lightblue/[0.2]' : ''
-                }`}
-              >
-                {renderChanges(change.changes)}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    );
-  };
-  
-
-  return (
-    <>
-    <Head>
-        <title>Patch {versionDetails.version} Notes - The Realm of Rivals</title>
-    </Head>
-    <main className="w-full min-h-screen">
-      {/* Full-width image */}
-      <div
-        className="relative w-full h-[30vh] md:h-[40vh] bg-cover bg-bottom bg-fixed"
-        style={{
-          backgroundImage: `url(${versionDetails.changelog?.imageUrl || DefaultSplash.src})`,
-        }}
-      >
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="title p-4 text-4xl md:text-[5rem] mt-20 text-white text-center">
-            PATCH {versionDetails.version} NOTES
-          </h1>
-        </div>
-      </div>
-
-      <div className="bg-backblue bg-opacity-80 p-4 md:p-10 md:px-[20%] shadow-xl">
-        <div className="mb-10">
-            <div className='w-full flex flex-row justify-center'>
-                <h2 className="title text-4xl md:text-[4rem] text-lightblue mb-1 md:mb-4">
-                {versionDetails.changelog?.title || ''}
-            </h2>
-            </div>
-          <p className="text-sm md:text-xl mb-3 md:mb-5 secondary-text text-lightblue">{versionDetails.changelog?.generalText}</p>
-          
-          {versionDetails.published && (<div className="text-[0.5rem] mb-3 md:mb-6 md:text-xs secondary-text opacity-60 w-full flex flex-row justify-center">
-              <p className='text-lightblue'>
-                <span className="text-lightblue">Published at </span>{' '}
-                {new Date(versionDetails.publishedAt).toLocaleDateString()}
-                <span className="text-lightblue"> by </span>{' '}
-                {versionDetails.publishedBy.username}
-              </p>
-            </div>)}
-
-            <hr className="border-lightblue/[0.2] mb-5 w-full center" />
-
-          {versionDetails.changelog?.changes ? (
-            <div>{renderChanges(versionDetails.changelog.changes)}</div>
-          ) : (
-            <p className="text-lightblue secondary-text text-md md:text-xl">No changelog available for this version.</p>
-          )}
-        </div>
-        <hr className="border-lightblue/[0.2] mb-5 w-full center" />
-      </div>
-    </main>
-    </>
-  );
+    title?: string;
+    type: string;
+    description: string;
+    changes?: Change[];
+    oldValue?: string | number;
+    newValue?: string | number;
 };
 
-export default VersionDetailsPage;
+type VersionDetails = {
+    version: string;
+    changelog?: { title?: string; generalText: string; level: string; imageUrl?: string; changes: Change[] };
+    published: boolean;
+    publishedAt: number;
+    publishedBy?: { username: string };
+};
+
+// Order and look of each change type. Every type has its own icon AND label, never color alone.
+const changeTypes: Record<string, { score: number; label: string; icon: IconType; tone: string }> = {
+    category: { score: 6, label: "", icon: FaChevronRight, tone: "text-ice" },
+    add: { score: 5, label: "New", icon: FaPlus, tone: "text-success border-success/40" },
+    adjust: { score: 4, label: "Tuned", icon: FaRightLeft, tone: "text-ice border-ice/40" },
+    remove: { score: 3, label: "Removed", icon: FaMinus, tone: "text-danger border-danger/40" },
+    fix: { score: 2, label: "Fixed", icon: FaWrench, tone: "text-gold border-gold/40" },
+    change: { score: 1, label: "Changed", icon: FaPen, tone: "text-lavender border-lavender/40" },
+};
+
+function sortChanges(changes: Change[]): Change[] {
+    return [...changes]
+        .sort((a, b) => (changeTypes[b.type]?.score ?? 0) - (changeTypes[a.type]?.score ?? 0))
+        .map(change => ({ ...change, changes: change.changes ? sortChanges(change.changes) : change.changes }));
+}
+
+function Changes({ changes, depth = 0 }: { changes: Change[]; depth?: number }) {
+    return <ul className={`flex flex-col gap-3 ${depth > 0 ? "pl-4 md:pl-6 border-l border-ice/15" : ""}`}>
+        {changes.map((change, index) => {
+            const style = changeTypes[change.type] ?? changeTypes.change;
+            if (change.type === "category") {
+                return <li key={index} className="flex flex-col gap-3 mt-2">
+                    <h3 className="display text-step-2 text-ice flex items-center gap-2"><style.icon aria-hidden className="text-base" />{change.title || "General"}</h3>
+                    {change.description && <p className="font-body text-lavender">{change.description}</p>}
+                    {change.changes && <Changes changes={change.changes} depth={depth + 1} />}
+                </li>;
+            }
+            return <li key={index} className="panel-inset p-3 md:p-4 flex flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className={`chip !py-0.5 ${style.tone}`}><style.icon aria-hidden className="text-[10px]" />{style.label}</span>
+                    {change.title && <span className="font-body font-bold text-ink">{change.title}</span>}
+                </div>
+                {change.description && <p className="font-body text-lavender">{change.description}</p>}
+                {change.type === 'adjust' && change.oldValue != null && change.newValue != null && <p className="font-body text-sm flex items-center gap-2 tabular-nums">
+                    <span className="text-lavender/80 line-through decoration-danger/70">{change.oldValue}</span>
+                    <FaArrowRight aria-label="becomes" className="text-ice" />
+                    <span className="text-ink font-bold">{change.newValue}</span>
+                </p>}
+                {change.changes && <Changes changes={change.changes} depth={depth + 1} />}
+            </li>;
+        })}
+    </ul>;
+}
+
+export default function VersionDetailsPage() {
+    const router = useRouter();
+    const version = typeof router.query.version === "string" ? router.query.version : "";
+    const [details, setDetails] = useState<VersionDetails | null>(null);
+    const [error, setError] = useState<{ status: number; message: string } | null>(null);
+
+    useEffect(() => {
+        if (!version) return;
+        const controller = new AbortController();
+        setDetails(null); setError(null);
+        api<VersionDetails>(`/version/${encodeURIComponent(version)}`, { signal: controller.signal })
+            .then(data => setDetails({ ...data, changelog: data.changelog ? { ...data.changelog, changes: sortChanges(data.changelog.changes ?? []) } : undefined }))
+            .catch(failure => { if (!controller.signal.aborted) setError(failure instanceof ApiError ? { status: failure.status, message: failure.message } : { status: 0, message: "Couldn't load this update." }); });
+        return () => controller.abort();
+    }, [version]);
+
+    const image = details?.changelog?.imageUrl || DefaultSplash.src;
+
+    return <>
+        <Head><title>{`Patch ${version} - Rivalium`}</title></Head>
+        <main className="w-full min-h-screen pb-16">
+            <div className="relative">
+                <div aria-hidden className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent)]" style={{ backgroundImage: `url(${image})` }} />
+                <div className="relative">
+                    <PageHeader title={`Patch ${version}`} meta={details ? formatDate(details.publishedAt) : undefined}
+                        lead={details?.changelog?.title}
+                        crumbs={[{ label: 'Home', href: '/' }, { label: 'Patch notes', href: '/patch-notes' }, { label: version || "…" }]} />
+                </div>
+            </div>
+            <article className="relative max-w-3xl mx-auto px-4">
+                {error ? <Notice tone="error" title={error.status === 404 ? "This update doesn't exist" : "Something went wrong"}
+                    action={<Link href="/patch-notes" className="font-body text-sm underline shrink-0">All patch notes</Link>}>{error.message}</Notice>
+                    : !details ? <div className="glass p-6 flex flex-col gap-3">{[0, 1, 2, 3].map(index => <div key={index} className="skeleton h-16" />)}</div>
+                    : <div className="glass p-5 md:p-8 flex flex-col gap-6 text-left">
+                        {details.changelog?.generalText && <p className="font-body text-step-1 text-ink/90 leading-relaxed">{details.changelog.generalText}</p>}
+                        <hr className="divider" />
+                        {details.changelog?.changes?.length
+                            ? <Changes changes={details.changelog.changes} />
+                            : <p className="font-body text-lavender">No detailed changes were listed for this version.</p>}
+                        {details.publishedBy && <p className="font-body text-xs text-lavender/80">Published {formatDate(details.publishedAt)} by {details.publishedBy.username}</p>}
+                    </div>}
+                <Link href="/patch-notes" className="inline-block mt-6 font-body text-ice hover:text-ink">← All patch notes</Link>
+            </article>
+        </main>
+    </>;
+}

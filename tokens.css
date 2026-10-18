@@ -1,0 +1,90 @@
+/* Hallmark · genre: atmospheric · theme: custom (Rivalium brand) · design-system: design.md
+ * paper oklch(13.6% 0.064 272) night navy · accent oklch(58.9% 0.151 50) ember · display Motion Control + body Bahnschrift
+ * axes: dark / display-heavy / warm accent on cool paper
+ *
+ * Every colour, font, space, radius and motion value on the site comes from this file.
+ * The channel variables (--*-lch) let Tailwind apply opacity: `oklch(var(--ink-lch) / 0.8)`.
+ */
+:root {
+  /* Paper: dark navy, lighter = higher (elevation by lightness, not shadow or blur) */
+  --paper-lch: 13.6% 0.064 272;      /* night */
+  --paper-2-lch: 19% 0.07 275;       /* content surface */
+  --paper-3-lch: 24% 0.075 276;      /* structure surface: sidebars, nav, raised cards */
+  --paper-4-lch: 29% 0.075 276;      /* hover / popover surface */
+  --color-paper: oklch(var(--paper-lch));
+  --color-paper-2: oklch(var(--paper-2-lch));
+  --color-paper-3: oklch(var(--paper-3-lch));
+  --color-paper-4: oklch(var(--paper-4-lch));
+
+  /* Ink: never pure white; tinted toward the navy anchor */
+  --ink-lch: 96% 0.012 275;
+  --ink-2-lch: 80.4% 0.079 280;      /* lavender: body copy */
+  --ink-3-lch: 70% 0.06 280;         /* muted: meta text ≥ 14px only */
+  --color-ink: oklch(var(--ink-lch));
+  --color-ink-2: oklch(var(--ink-2-lch));
+  --color-ink-3: oklch(var(--ink-3-lch));
+
+  /* Lines */
+  --rule-lch: 86.4% 0.069 252;       /* ice, used at low alpha */
+  --color-rule: oklch(var(--rule-lch) / 0.14);
+  --color-rule-strong: oklch(var(--rule-lch) / 0.32);
+
+  /* Accent: ember is THE primary action (≤ 3% of a viewport). Frost is every other interactive fill. */
+  --accent-lch: 58.9% 0.151 50;
+  --accent-2-lch: 55.4% 0.142 50;
+  --color-accent: oklch(var(--accent-lch));
+  --color-accent-2: oklch(var(--accent-2-lch));
+  --color-accent-ink: oklch(98% 0.01 60);
+  --frost-lch: 79.5% 0.103 261;
+  --color-frost: oklch(var(--frost-lch));
+  --ice-lch: 86.4% 0.069 252;
+  --color-ice: oklch(var(--ice-lch));
+  --color-focus: oklch(var(--ice-lch));
+
+  /* Secondary action (royal) and quiet action (indigo) — split-gradient buttons, brand carry-over */
+  --color-royal: oklch(38.2% 0.143 321);
+  --color-royal-2: oklch(34% 0.13 321);
+  --color-indigo: oklch(30% 0.12 276);
+  --color-indigo-2: oklch(27% 0.11 276);
+
+  /* Brand gradient: the logo/wordmark and the drawn title underline only. Never on headline text. */
+  --gradient-brand: linear-gradient(90deg, oklch(87.1% 0.128 83), oklch(71.5% 0.062 2), oklch(64% 0.12 320));
+
+  /* State */
+  --success-lch: 87.6% 0.087 145;
+  --danger-lch: 78.8% 0.123 20;
+  --warning-lch: 87.1% 0.128 83;
+  --color-success: oklch(var(--success-lch));
+  --color-danger: oklch(var(--danger-lch));
+  --color-warning: oklch(var(--warning-lch));
+
+  /* Light field on dark (matches the game client's LineEdit) */
+  --color-field: oklch(92.8% 0.03 267);
+  --color-field-ink: oklch(36.3% 0.047 268);
+
+  /* Type */
+  --font-display: mainFont, system-ui, sans-serif;
+  --font-body: secondaryFont, system-ui, sans-serif;
+
+  /* 4pt spacing scale */
+  --space-3xs: 0.25rem; --space-2xs: 0.5rem; --space-xs: 0.75rem;
+  --space-sm: 1rem; --space-md: 1.5rem; --space-lg: 2rem;
+  --space-xl: 3rem; --space-2xl: 4.5rem; --space-3xl: 7rem;
+
+  /* Radii */
+  --radius-input: 6px;
+  --radius-button: 8px;
+  --radius-card: 10px; /* references (Riot, Blizzard) keep cards ≤ 8–10px */
+  --radius-pill: 999px;
+
+  /* Motion: three easings, three durations */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  /* Layers (named, no 9999) */
+  --z-base: 1; --z-raised: 10; --z-nav: 40; --z-menu: 50; --z-modal: 60; --z-toast: 70;
+}

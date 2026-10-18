@@ -3,37 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "@testing-library/jest-dom": "^6.5.0",
-    "@testing-library/react": "^16.0.1",
-    "@testing-library/user-event": "^14.5.2",
-    "@tsparticles/all": "^3.5.0",
-    "@tsparticles/basic": "^3.5.0",
-    "@tsparticles/engine": "^3.5.0",
-    "@tsparticles/react": "^3.0.0",
-    "@tsparticles/slim": "^3.5.0",
-    "@types/jest": "^29.5.13",
-    "autoprefixer": "^10.4.20",
-    "axios": "^1.7.9",
-    "html-to-image": "^1.11.11",
-    "next": "^14.2.32",
-    "postcss": "^8.4.47",
+    "next": "14.2.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
-    "react-live": "^4.1.7",
     "react-spring": "^9.7.4",
-    "react-transition-group": "^4.4.5",
-    "sass": "^1.79.2",
-    "styled-components": "^6.1.13",
-    "tailwindcss": "^3.4.12",
-    "web-vitals": "^4.2.3"
+    "sharp": "^0.35.5"
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "sync:rivals": "node scripts/sync-rivals.mjs"
   },
   "browserslist": {
     "production": [
@@ -51,8 +34,21 @@
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.8",
     "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.6.1",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.12",
-    "typescript": "^5.6.2"
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8.5.30",
+    "sass": "^1.105.1",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.6.2",
+    "yaml": "^2.9.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp"
+    ],
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher"
+    ]
   }
 }
