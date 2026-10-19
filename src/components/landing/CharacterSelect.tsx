@@ -75,13 +75,16 @@ export default function CharacterSelect() {
                     <p className="font-body text-step-0 text-lavender max-w-prose">{rival.description_markdown.replace(/\*\*/g, "")}</p>
                     <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 max-w-md">
                         {[
-                            ["Health", rival.stats.health, rival.stats.health / maxHealth],
-                            ["Speed", rival.stats.base_speed, rival.stats.base_speed / maxSpeed],
-                        ].map(([label, value, ratio]) => <div key={label as string}>
+                            { label: "Health", value: rival.stats.health, ratio: rival.stats.health / maxHealth, icon: "health" },
+                            { label: "Speed", value: rival.stats.base_speed, ratio: rival.stats.base_speed / maxSpeed, icon: "speed" },
+                        ].map(({ label, value, ratio, icon }) => <div key={label}>
                             <div className="flex justify-between font-body text-sm mb-1">
-                                <dt className="text-lavender/80">{label}</dt><dd className="text-ink tabular-nums">{value}</dd>
+                                <dt className="text-lavender/80 flex items-center gap-1.5">
+                                    <Image src={`/images/rivals/stats/${icon}.png`} alt="" width={18} height={18} className="w-[18px] h-[18px] object-contain [image-rendering:pixelated]" />
+                                    {label}
+                                </dt><dd className="text-ink tabular-nums">{value}</dd>
                             </div>
-                            <div className="meter" aria-hidden><span style={{ width: `${Math.round((ratio as number) * 100)}%` }} /></div>
+                            <div className="meter" aria-hidden><span style={{ width: `${Math.round(ratio * 100)}%` }} /></div>
                         </div>)}
                     </dl>
                     <ul className="flex flex-wrap gap-2" aria-label={`${rival.name}'s abilities`}>

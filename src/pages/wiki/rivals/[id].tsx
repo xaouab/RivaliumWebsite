@@ -31,11 +31,14 @@ export default function RivalPage({ rival, previous, next }: Props) {
                     <RichText text={rival.description_markdown} />
                     <dl className="grid grid-cols-3 gap-3 not-prose mt-4">
                         {[
-                            ["Health", rival.stats.health],
-                            ["Base speed", rival.stats.base_speed],
-                            ["Ultimate charge", rival.stats.ultimate_charge],
-                        ].map(([label, value]) => <div key={label} className="panel-inset p-3 text-center">
-                            <dt className="label-caps caps-sm text-lavender">{label}</dt>
+                            { label: "Health", value: rival.stats.health, icon: "health" },
+                            { label: "Base speed", value: rival.stats.base_speed, icon: "speed" },
+                            { label: "Ultimate charge", value: rival.stats.ultimate_charge, icon: "ultimate-charge" },
+                        ].map(({ label, value, icon }) => <div key={label} className="panel-inset p-3 text-center">
+                            <dt className="label-caps caps-sm text-lavender flex items-center justify-center gap-2">
+                                <Image src={`/images/rivals/stats/${icon}.png`} alt="" width={20} height={20} className="w-5 h-5 object-contain [image-rendering:pixelated]" />
+                                {label}
+                            </dt>
                             <dd className="display text-2xl text-ink mt-1">{value}</dd>
                         </div>)}
                     </dl>
