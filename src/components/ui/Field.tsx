@@ -17,7 +17,7 @@ export default function Field({ label, hint, error, aside, className = "", ...pr
 
     return <div className={`flex flex-col gap-1.5 w-full ${className}`}>
         <div className="flex items-baseline justify-between gap-2">
-            <label htmlFor={id} className="label-caps text-sm text-ice">{label}</label>
+            <label htmlFor={id} className="label-caps caps-md text-ice">{label}</label>
             {aside}
         </div>
         <Input
@@ -38,7 +38,7 @@ export function TextAreaField({ label, hint, error, className = "", ...props }: 
     const id = useId();
     const describedBy = [hint && !error ? `${id}-hint` : null, error ? `${id}-error` : null].filter(Boolean).join(" ") || undefined;
     return <div className={`flex flex-col gap-1.5 w-full ${className}`}>
-        <label htmlFor={id} className="label-caps text-sm text-ice">{label}</label>
+        <label htmlFor={id} className="label-caps caps-md text-ice">{label}</label>
         <textarea id={id} className="field-input" aria-invalid={error ? true : undefined} aria-describedby={describedBy} {...props} />
         {hint && !error && <p id={`${id}-hint`} className="font-body text-sm text-lavender/80">{hint}</p>}
         {error && <p id={`${id}-error`} className="font-body text-sm text-danger" role="alert">{error}</p>}

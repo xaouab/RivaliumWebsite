@@ -13,11 +13,13 @@
     --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
     --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
     --step-1: clamp(1.2rem, 1.12rem + 0.4vw, 1.375rem);
-    --step-2: clamp(1.44rem, 1.3rem + 0.7vw, 1.75rem);
-    --step-3: clamp(1.73rem, 1.5rem + 1.15vw, 2.375rem);
-    --step-4: clamp(2.07rem, 1.7rem + 1.9vw, 3.25rem);
-    --step-5: clamp(2.5rem, 1.9rem + 3vw, 4.5rem);
-    --step-6: clamp(3rem, 2rem + 5vw, 6rem);
+    // Steps 2–6 only set display titles. Values are the owner-approved title sizes divided by the face's 118%
+    // size-adjust (font.scss), so rendered titles are unchanged.
+    --step-2: clamp(1.4rem, 1.27rem + 0.68vw, 1.7rem);
+    --step-3: clamp(1.7rem, 1.44rem + 1.1vw, 2.33rem);
+    --step-4: clamp(2.03rem, 1.65rem + 1.86vw, 3.18rem);
+    --step-5: clamp(2.46rem, 1.86rem + 2.88vw, 4.45rem);
+    --step-6: clamp(2.88rem, 1.95rem + 4.75vw, 5.72rem);
 }
 
 html, body { overflow-x: clip; }
@@ -96,12 +98,19 @@ body { timeline-scope: --page; }
     letter-spacing: 0.06em;
     line-height: 1.2;
 }
+// Unified caps sizes (display face, 118% size-adjusted). Caps text never goes below 13px.
+//  caps-sm 13px: tags, chips, stat labels, timings   caps-md 15px: sidebar/footer/section headings, field labels, small caps links
+//  caps-lg 17px: prominent caps links, menu items     caps-nav 18px: top navigation
+.caps-sm { font-size: .8125rem; }
+.caps-md { font-size: .9375rem; }
+.caps-lg { font-size: 1.0625rem; }
+.caps-nav { font-size: 1.125rem; }
 // Ordinal labels only (phases, steps). Not a decorative eyebrow.
 .kicker {
     font-family: var(--font-display);
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    font-size: var(--step--1);
+    font-size: .8125rem; // caps-sm
     color: var(--color-ice);
 }
 .text-step--1 { font-size: var(--step--1); }
@@ -120,6 +129,16 @@ body { timeline-scope: --page; }
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+// Softer title gradient for primary page titles (wiki): peach → ice, with a dark halo kept via drop-shadow.
+.text-gradient-soft {
+    background: var(--gradient-soft);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px oklch(var(--paper-lch) / .85));
+    text-shadow: none;
+}
+.title-mark.is-soft::after { background: var(--gradient-soft); }
 // Titles are solid ink; the brand shows as a short drawn underline.
 .title-mark::after {
     content: "";
@@ -158,7 +177,7 @@ body { timeline-scope: --page; }
     th { text-align: left; color: var(--color-ink); font-weight: 700; }
     th, td { padding: .6rem .75rem; border-bottom: 1px solid var(--color-rule); vertical-align: top; }
     hr { border: 0; height: 1px; background: var(--color-rule); margin: 2rem 0; }
-    code, kbd { background: var(--color-paper); border: 1px solid var(--color-rule); padding: .05rem .4rem; border-radius: 4px; font-size: .9em; color: var(--color-ink); }
+    code, kbd { background: var(--color-paper); border: 1px solid var(--color-rule); padding: .05rem .4rem; border-radius: 0; font-size: .9em; color: var(--color-ink); }
 }
 
 // ---------------------------------------------------------------------------
@@ -188,7 +207,7 @@ body { timeline-scope: --page; }
 .panel-inset {
     background: var(--color-paper);
     border: 1px solid var(--color-rule);
-    border-radius: 10px;
+    border-radius: 0;
 }
 
 // Interactive card: one signal (edge + surface lighten). No lift, no glow.
@@ -209,42 +228,64 @@ body { timeline-scope: --page; }
 // ---------------------------------------------------------------------------
 :focus-visible {
     outline: 2px solid var(--color-focus);
-    outline-offset: 3px;
-    border-radius: 4px;
+    outline-offset: 0;
+    border-radius: 0;
 }
 
 .button {
-    --btn-top: oklch(31% 0.08 276);
-    --btn-bottom: oklch(28% 0.08 276);
+    // Default = SECONDARY (frost): light frost tint, two-tone split, 1px frost outline. Owner's universal secondary,
+    // mirrored by the client's Button/SecondaryButton theme types. Every variant keeps a flush 1px outline.
+    --btn-top: oklch(var(--frost-lch) / .2);
+    --btn-bottom: oklch(var(--frost-lch) / .16);
+    --btn-edge: oklch(var(--frost-lch) / .45);
     position: relative;
     justify-content: center;
     white-space: nowrap;
     min-height: 48px;
-    border-radius: 4px;
+    border-radius: 0;
     font-family: var(--font-display);
     text-transform: uppercase;
     letter-spacing: .06em;
     color: var(--color-ink);
     background: linear-gradient(180deg, var(--btn-top) 0 50%, var(--btn-bottom) 50% 100%);
-    border: 1px solid oklch(var(--ink-lch) / .14);
+    border: 1px solid var(--btn-edge);
     transition: transform var(--dur-micro) var(--ease-out), background-color var(--dur-micro) var(--ease-out), filter var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
 
-    &:hover:not([disabled]) { filter: brightness(1.1); }
+    &:hover:not([disabled]) { filter: brightness(1.1); --btn-edge: oklch(var(--frost-lch) / .7); }
     &:active:not([disabled]) { transform: scale(.98); }
 
+    // PRIMARY (ember): one per view. Flush light frame instead of a spaced ring.
     &.main {
         --btn-top: var(--color-accent);
         --btn-bottom: oklch(56.5% 0.148 50);
+        --btn-edge: oklch(var(--ink-lch) / .45);
         color: var(--color-accent-ink);
-        border-color: transparent;
         min-height: 56px;
     }
-    // Hero framing (Riot detail): a thin frame 4px outside the button, no glow.
-    &.main.is-framed { box-shadow: 0 0 0 4px var(--color-paper), 0 0 0 5px oklch(var(--ink-lch) / .55); }
-    &.secondary { --btn-top: var(--color-royal); --btn-bottom: oklch(36% 0.138 321); border-color: transparent; min-height: 52px; }
-    &.frost { --btn-top: oklch(var(--frost-lch) / .2); --btn-bottom: oklch(var(--frost-lch) / .16); border-color: oklch(var(--frost-lch) / .45); }
-    &.no-back { background: transparent; border: 1px solid oklch(var(--ink-lch) / .35); }
-    &.no-back:hover:not([disabled]) { border-color: var(--color-ink); filter: none; background: oklch(var(--ink-lch) / .06); }
+    &.main:hover:not([disabled]) { --btn-edge: oklch(var(--ink-lch) / .7); }
+    &.main.is-framed { --btn-edge: oklch(var(--ink-lch) / .55); }
+    // "secondary" and "frost" are the same button (kept as names for existing markup).
+    &.secondary, &.frost { min-height: 48px; }
+    // PREMIUM: gold gradient (deep gold → pale gold → rose gold), dark ink, periodic shine. Premium moments only.
+    &.premium {
+        color: #2a1606;
+        --btn-edge: oklch(20% 0.05 60 / .55);
+        background: linear-gradient(180deg, rgb(255 255 255 / .06) 0 50%, transparent 50% 100%), linear-gradient(90deg, #e9a24c, #ffd98a, #f0b39a);
+        overflow: hidden;
+        &::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 40%, rgb(255 255 255 / .55) 50%, transparent 60%);
+            transform: translateX(-120%);
+            animation: premium-shine 4.5s var(--ease-out) infinite;
+            pointer-events: none;
+        }
+        &:hover:not([disabled])::after { animation-duration: 1.2s; }
+    }
+    // TERTIARY (ghost): no fill, ink outline.
+    &.no-back { background: transparent; --btn-edge: oklch(var(--ink-lch) / .35); }
+    &.no-back:hover:not([disabled]) { --btn-edge: var(--color-ink); filter: none; background: oklch(var(--ink-lch) / .06); }
     &.is-sm { min-height: 40px; letter-spacing: .07em; }
     &.is-lg { min-height: 60px; }
 
@@ -255,6 +296,9 @@ body { timeline-scope: --page; }
         cursor: not-allowed;
     }
 }
+
+@keyframes premium-shine { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+@media (prefers-reduced-motion: reduce) { .button.premium::after { animation: none; } }
 
 .keycap {
     display: inline-grid;
@@ -269,7 +313,7 @@ body { timeline-scope: --page; }
     background: var(--color-paper-4);
     border: 1px solid var(--color-rule-strong);
     border-bottom-width: 2px;
-    border-radius: 5px;
+    border-radius: 0;
 }
 
 .chip {
@@ -292,18 +336,18 @@ body { timeline-scope: --page; }
     flex-wrap: wrap;
     padding: 4px;
     gap: 4px;
-    border-radius: 10px;
+    border-radius: 0;
     background: var(--color-paper);
     border: 1px solid var(--color-rule);
 
     button {
         min-height: 44px;
         padding: 0 1.1rem;
-        border-radius: 7px;
+        border-radius: 0;
         font-family: var(--font-display);
         text-transform: uppercase;
         letter-spacing: .05em;
-        font-size: var(--step--1);
+        font-size: .9375rem; // caps-md
         color: var(--color-ink-2);
         transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
 
@@ -325,7 +369,7 @@ body { timeline-scope: --page; }
     transition: border-color var(--dur-micro) var(--ease-out);
 
     &::placeholder { color: oklch(36.3% 0.047 268 / .6); }
-    &:focus { outline: 2px solid var(--color-focus); outline-offset: 2px; border-color: var(--color-ice); }
+    &:focus { outline: 2px solid var(--color-focus); outline-offset: 0; border-color: var(--color-ice); }
     &[aria-invalid="true"] { border-color: var(--color-danger); outline-color: var(--color-danger); }
     &:disabled, &[readonly] { opacity: .6; cursor: not-allowed; }
 }
@@ -358,7 +402,7 @@ textarea.field-input { min-height: 9rem; resize: vertical; line-height: 1.5; }
     background: linear-gradient(90deg, oklch(var(--ice-lch) / .06), oklch(var(--ice-lch) / .14), oklch(var(--ice-lch) / .06));
     background-size: 200% 100%;
     animation: skeleton 1.4s linear infinite; // functional loader: the only allowed loop
-    border-radius: 8px;
+    border-radius: 0;
 }
 @keyframes skeleton { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 

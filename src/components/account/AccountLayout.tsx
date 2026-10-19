@@ -10,7 +10,8 @@ import {
 import Notice from "@/components/ui/Notice";
 import Spinner from "@/components/ui/Spinner";
 import { useAuth } from "@/contexts/AuthContext";
-import { rankIcon, rankName } from "@/lib/game";
+import { rankColor, rankIcon, rankName } from "@/lib/game";
+import PlayerTag from "@/components/ui/PlayerTag";
 
 const sections: { href: string; label: string; icon: IconType }[] = [
     { href: "/account", label: "Overview", icon: FaGauge },
@@ -50,7 +51,7 @@ export default function AccountLayout({ title, description, children }: { title:
                         <Image src={rankIcon(user.rank?.tier)} alt={rankName(user.rank?.tier)} width={44} height={44} className="w-11 h-11 object-contain" />
                         <div className="min-w-0">
                             <p className="display text-lg text-ink truncate">{user.playerName ?? user.username}</p>
-                            <p className="font-body text-sm text-lavender/80">#{user.playerTag ?? "0000"} · {rankName(user.rank?.tier)}</p>
+                            <p className="font-body text-sm text-lavender/80"><PlayerTag tag={user.playerTag ?? "0000"} /> · <span style={{ color: rankColor(user.rank?.tier) }}>{rankName(user.rank?.tier)}</span></p>
                         </div>
                     </div>
                     <nav aria-label="Account">
@@ -80,7 +81,7 @@ export default function AccountLayout({ title, description, children }: { title:
 
                 <section className="flex-1 min-w-0 w-full flex flex-col gap-5 text-left" aria-labelledby="account-title">
                     <header className="flex flex-col gap-1">
-                        <h1 id="account-title" className="display text-step-5 text-ink title-mark title-halo">{title}</h1>
+                        <h1 id="account-title" className="display text-step-5 text-gradient-soft is-soft w-fit title-mark">{title}</h1>
                         {description && <p className="font-body text-ink/90 title-halo">{description}</p>}
                     </header>
                     {user.deletionRequestedAt && path !== "/account/data" && <Notice tone="warning" title="Account deletion requested"

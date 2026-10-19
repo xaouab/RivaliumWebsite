@@ -39,7 +39,8 @@ export const slotLabels: Record<AbilitySlot, { name: string; key: string }> = {
     ultimate: { name: "Ultimate", key: "X" },
 };
 
-export const rivalIcon = (id: string) => `/images/rivals/${id}/icon.png`;
+/** The rival's in-game portrait (client gameplay/character/rivals/<id>/Avatar.png, 128px pixel art). */
+export const rivalAvatar = (id: string) => `/images/rivals/${id}/avatar.png`;
 export const abilityIcon = (rivalId: string, slot: AbilitySlot) => `/images/rivals/${rivalId}/${slot}.png`;
 
 /** Video asset ids for the wiki placeholders; drop files at /videos/<id>.mp4 and set `src`. */

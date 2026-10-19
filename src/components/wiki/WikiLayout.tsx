@@ -17,9 +17,8 @@ const groups: NavGroup[] = [
 ];
 
 /** Docs-style shell: structural glass sidebar + content column. Sidebar collapses into a disclosure on small screens. */
-export default function WikiLayout({ title, lead, crumbs, children }: {
+export default function WikiLayout({ title, crumbs, children }: {
     title: string;
-    lead?: ReactNode;
     crumbs: Crumb[];
     children: ReactNode;
 }) {
@@ -27,9 +26,9 @@ export default function WikiLayout({ title, lead, crumbs, children }: {
     const path = asPath.split(/[?#]/)[0];
 
     const nav = <nav aria-label="Wiki" className="flex flex-col gap-5">
-        <Link href="/wiki" className={`label-caps text-sm ${path === "/wiki" ? "text-ink" : "text-ice hover:text-ink"}`}>Wiki home</Link>
+        <Link href="/wiki" className={`label-caps caps-md ${path === "/wiki" ? "text-ink" : "text-ice hover:text-ink"}`}>Wiki home</Link>
         {groups.map(group => <div key={group.label} className="flex flex-col gap-1.5">
-            <Link href={group.href} className={`label-caps text-sm ${path === group.href ? "text-ink" : "text-ice/80 hover:text-ink"}`}>{group.label}</Link>
+            <Link href={group.href} className={`label-caps caps-md ${path === group.href ? "text-ink" : "text-ice/80 hover:text-ink"}`}>{group.label}</Link>
             <ul className="flex flex-col border-l border-ice/15">
                 {group.items.map(item => {
                     const active = path === item.href;
@@ -49,9 +48,9 @@ export default function WikiLayout({ title, lead, crumbs, children }: {
     </nav>;
 
     return <main className="w-full min-h-screen">
-        <PageHeader title={title} lead={lead} crumbs={crumbs} compact />
+        <PageHeader title={title} crumbs={crumbs} compact />
         <div className="w-full max-w-6xl mx-auto px-4 pb-16 flex flex-col lg:flex-row gap-6 items-start">
-            <aside className="w-full lg:w-60 lg:shrink-0 lg:sticky lg:top-24 text-left">
+            <aside className="w-full lg:w-60 lg:shrink-0 lg:sticky lg:top-28 text-left">
                 <details className="glass-strong lg:hidden p-4 group">
                     <summary className="label-caps text-ice cursor-pointer list-none flex justify-between">
                         Browse the wiki <span aria-hidden className="transition-transform group-open:rotate-180">▾</span>

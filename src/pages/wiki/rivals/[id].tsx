@@ -5,7 +5,7 @@ import Link from "next/link";
 import WikiLayout from "@/components/wiki/WikiLayout";
 import RichText from "@/components/ui/RichText";
 import VideoSlot from "@/components/ui/VideoSlot";
-import { abilityIcon, getRival, present, Rival, rivalIcon, rivals, rivalVideoId, slotLabels } from "@/data/rivals";
+import { abilityIcon, getRival, present, Rival, rivalAvatar, rivals, rivalVideoId, slotLabels } from "@/data/rivals";
 
 type Props = { rival: Rival; previous: Pick<Rival, "id" | "name">; next: Pick<Rival, "id" | "name"> };
 
@@ -18,15 +18,14 @@ export default function RivalPage({ rival, previous, next }: Props) {
         </Head>
         <WikiLayout
             title={rival.name}
-            lead={rival.title}
             crumbs={[{ label: "Home", href: "/" }, { label: "Wiki", href: "/wiki" }, { label: "Rivals", href: "/wiki/rivals" }, { label: rival.name }]}
         >
             <div className="flex flex-col md:flex-row gap-6 items-start">
                 <div className="flex items-center gap-4 md:flex-col md:items-center md:w-40 shrink-0">
                     <span className="grid place-items-center w-24 h-24 rounded-full border-2" style={{ borderColor: accent, ["--accent" as any]: `${accent}66` }}>
-                        <Image src={rivalIcon(rival.id)} alt={`${rival.name} icon`} width={80} height={80} className="w-20 h-20 rounded-full" priority />
+                        <Image src={rivalAvatar(rival.id)} alt={`${rival.name} portrait`} width={80} height={80} className="[image-rendering:pixelated] w-20 h-20 rounded-full" priority />
                     </span>
-                    <span className="label-caps text-sm px-3 py-1 rounded-full border" style={{ color: accent, borderColor: `${accent}66` }}>{rival.archetype}</span>
+                    <span className="label-caps caps-md px-3 py-1 rounded-full border" style={{ color: accent, borderColor: `${accent}66` }}>{rival.archetype}</span>
                 </div>
                 <div className="flex-1 min-w-0 prose-rivalium">
                     <RichText text={rival.description_markdown} />
@@ -36,7 +35,7 @@ export default function RivalPage({ rival, previous, next }: Props) {
                             ["Base speed", rival.stats.base_speed],
                             ["Ultimate charge", rival.stats.ultimate_charge],
                         ].map(([label, value]) => <div key={label} className="panel-inset p-3 text-center">
-                            <dt className="label-caps text-xs text-lavender">{label}</dt>
+                            <dt className="label-caps caps-sm text-lavender">{label}</dt>
                             <dd className="display text-2xl text-ink mt-1">{value}</dd>
                         </div>)}
                     </dl>
@@ -57,7 +56,7 @@ export default function RivalPage({ rival, previous, next }: Props) {
                                 <div className="flex items-center gap-3">
                                     <Image src={abilityIcon(rival.id, ability.slot)} alt="" width={48} height={48} className="w-12 h-12 rounded-md bg-night/50" />
                                     <div>
-                                        <p className="label-caps text-xs text-lavender flex items-center gap-2">{slot.name} <kbd className="keycap">{slot.key}</kbd></p>
+                                        <p className="label-caps caps-sm text-lavender flex items-center gap-2">{slot.name} <kbd className="keycap">{slot.key}</kbd></p>
                                         <h3 className="display text-step-2 text-ink">{ability.name}</h3>
                                     </div>
                                 </div>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { KeyboardEvent, useRef, useState } from "react";
-import { abilityIcon, rivalIcon, rivals, slotLabels } from "@/data/rivals";
+import { abilityIcon, rivalAvatar, rivals, slotLabels } from "@/data/rivals";
 
 // Highest values across the roster, so the meters compare rivals against each other.
 const maxHealth = Math.max(...rivals.map(rival => rival.stats.health));
@@ -49,10 +49,10 @@ export default function CharacterSelect() {
                         ${selected ? "bg-paper accent-ring" : "border-transparent hover:bg-paper-4"}`}
                     style={{ ["--accent" as any]: item.archetype_color }}
                 >
-                    <Image src={rivalIcon(item.id)} alt="" width={40} height={40} className="w-10 h-10 rounded-full shrink-0" />
+                    <Image src={rivalAvatar(item.id)} alt="" width={40} height={40} className="[image-rendering:pixelated] w-10 h-10 rounded-full shrink-0" />
                     <span className="flex flex-col items-start min-w-0">
                         <span className={`display text-lg leading-none ${selected ? "text-ink" : "text-ice"}`}>{item.name}</span>
-                        <span className="label-caps text-[11px] mt-1" style={{ color: item.archetype_color }}>{item.archetype}</span>
+                        <span className="label-caps caps-sm mt-1" style={{ color: item.archetype_color }}>{item.archetype}</span>
                     </span>
                 </button>;
             })}
@@ -63,7 +63,7 @@ export default function CharacterSelect() {
             <div className="relative grid md:grid-cols-[auto_1fr] gap-6 items-start">
                 <div className="flex md:flex-col items-center gap-4">
                     <span className="grid place-items-center w-28 h-28 md:w-36 md:h-36 rounded-full border-2 accent-ring bg-night/40">
-                        <Image src={rivalIcon(rival.id)} alt={`${rival.name} portrait`} width={128} height={128} className="w-24 h-24 md:w-32 md:h-32 rounded-full" />
+                        <Image src={rivalAvatar(rival.id)} alt={`${rival.name} portrait`} width={128} height={128} className="[image-rendering:pixelated] w-24 h-24 md:w-32 md:h-32 rounded-full" />
                     </span>
                     <span className="chip" style={{ color: rival.archetype_color, borderColor: `${rival.archetype_color}66` }}>{rival.archetype}</span>
                 </div>

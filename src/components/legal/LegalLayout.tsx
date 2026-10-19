@@ -15,7 +15,7 @@ export default function LegalLayout({ title, revised, sections, children }: {
             <PageHeader title={title} meta={`Last revised ${revised}`} crumbs={[{ label: "Home", href: "/" }, { label: title }]} compact />
             <div className="max-w-6xl mx-auto px-4 grid lg:grid-cols-[16rem_1fr] gap-6 items-start text-left">
                 <nav aria-label="On this page" className="glass-strong p-4 lg:sticky lg:top-24 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-thin">
-                    <p className="label-caps text-sm text-ice mb-2">On this page</p>
+                    <p className="label-caps caps-md text-ice mb-2">On this page</p>
                     <ol className="flex flex-col gap-0.5 font-body text-sm">
                         {sections.map(section => <li key={section.id}>
                             <a href={`#${section.id}`} className="block rounded px-2 py-1.5 text-lavender hover:text-ink hover:bg-ice/10">{section.title}</a>

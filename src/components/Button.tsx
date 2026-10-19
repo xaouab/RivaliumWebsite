@@ -4,8 +4,8 @@ import { IconType } from "react-icons/lib";
 import Spinner from "@/components/ui/Spinner";
 
 interface ButtonProps {
-    /** main = ember, the one primary action per view. secondary = royal. frost = quiet action. Default = indigo. */
-    type?: 'main' | 'secondary' | 'frost' | 'no-back';
+    /** main = ember primary (one per view). Default / secondary / frost = frost secondary. no-back = ghost. See docs/buttons in .ai. */
+    type?: 'main' | 'secondary' | 'frost' | 'no-back' | 'premium';
     content?: string;
     Icon?: IconType;
     small?: boolean;
@@ -28,9 +28,10 @@ export default function Button({ type, onClick, content, small, big, disabled, l
     const inactive = disabled || loading;
     // Size ladder (design.md § Buttons): default 48px, small 40px (dense rows only), big 60px.
     // `main` adds its own 56px floor so the primary action is always the largest thing in its row.
-    let size = "text-base md:text-lg px-6 py-2.5";
-    if (small) size = "is-sm text-sm px-4 py-2";
-    if (big) size = "is-lg text-lg md:text-xl px-8 md:px-10 py-3";
+    // One step up from the body ladder (owner: buttons a bit bigger, all in the display face).
+    let size = "text-lg md:text-xl px-7 py-2.5";
+    if (small) size = "is-sm text-base px-5 py-2";
+    if (big) size = "is-lg text-xl md:text-2xl px-9 md:px-11 py-3";
     if (framed) size += " is-framed";
 
     const classes = `inline-flex items-center gap-2 button ${disabled ? "" : type ?? ""} ${size} ${className}`;

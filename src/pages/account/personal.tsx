@@ -53,7 +53,7 @@ export default function PersonalPage() {
                         <Field label="Date of birth" type="date" autoComplete="bday" value={form.birthDate} onChange={set("birthDate")} max={new Date().toISOString().slice(0, 10)} />
                     </fieldset>
                     <fieldset className="grid sm:grid-cols-2 gap-4">
-                        <legend className="label-caps text-sm text-ice mb-2 col-span-full">Address</legend>
+                        <legend className="label-caps caps-md text-ice mb-2 col-span-full">Address</legend>
                         <Field className="sm:col-span-2" label="Street address" autoComplete="street-address" value={form.address} onChange={set("address")} maxLength={160} />
                         <Field label="City" autoComplete="address-level2" value={form.city} onChange={set("city")} maxLength={64} />
                         <Field label="Postal code" autoComplete="postal-code" value={form.postalCode} onChange={set("postalCode")} maxLength={16} />

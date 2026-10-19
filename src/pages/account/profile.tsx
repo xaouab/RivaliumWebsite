@@ -5,6 +5,7 @@ import Field from "@/components/ui/Field";
 import Notice from "@/components/ui/Notice";
 import { useAuth } from "@/contexts/AuthContext";
 import { api, ApiError } from "@/lib/api";
+import PlayerTag from "@/components/ui/PlayerTag";
 
 const playerNameRegex = /^[A-Za-z0-9_-]{3,16}$/;
 
@@ -47,7 +48,7 @@ function ProfileForm() {
                     value={playerName}
                     onChange={event => { setPlayerName(event.target.value); setState({}); }}
                     error={invalid ? "3 to 16 letters, numbers, underscores or hyphens." : null}
-                    hint={<>Your tag is <strong className="text-ink">#{user.playerTag}</strong>. It stays the same unless another player already uses that tag with your new name.</>}
+                    hint={<>Your tag is <PlayerTag tag={user.playerTag} />. It stays the same unless another player already uses that tag with your new name.</>}
                     maxLength={16}
                 />
                 <div>

@@ -44,7 +44,7 @@ export default function PatchNotes() {
     return <>
         <Head><title>Patch Notes - Rivalium</title></Head>
         <main className="w-full min-h-screen pb-16">
-            <PageHeader title="Patch Notes" lead="Every change to rivals, maps and systems, newest first."
+            <PageHeader title="Patch Notes" compact
                 crumbs={[{ label: 'Home', href: '/' }, { label: 'Patch notes' }]} />
 
             <div className="max-w-6xl mx-auto px-4 flex flex-col gap-6">

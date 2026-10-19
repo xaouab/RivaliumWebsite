@@ -27,7 +27,7 @@ export default function PortalShell({ pageTitle, heading, word, intro, children 
                     </Link>
                     <div className="w-full max-w-md mx-auto flex flex-col gap-6 rise-in">
                         <div className="flex flex-col gap-3 text-center">
-                            <h1 className="display text-step-4 text-ink title-mark is-centered">{heading}</h1>
+                            <h1 className="display text-step-4 text-gradient-soft is-soft w-fit mx-auto title-mark is-centered">{heading}</h1>
                             {intro && <div className="font-body text-lavender text-step-0">{intro}</div>}
                         </div>
                         {children}

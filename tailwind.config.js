@@ -5,6 +5,8 @@ const token = (channels) => `oklch(var(${channels}) / <alpha-value>)`;
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
+    // Owner rule: no rounded edges on any button or shape. Only the loading spinner opts back in (rounded-[50%]).
+    borderRadius: { none: '0', DEFAULT: '0', sm: '0', md: '0', lg: '0', xl: '0', '2xl': '0', '3xl': '0', full: '0' },
     extend: {
       colors: {
         paper: { DEFAULT: token('--paper-lch'), 2: token('--paper-2-lch'), 3: token('--paper-3-lch'), 4: token('--paper-4-lch') },

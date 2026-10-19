@@ -1,3 +1,5 @@
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { TransitionContextProvider } from "@/contexts/TransitionContext";
 import { easings } from "react-spring";
 import AnimatedBackground from "./background/AnimatedBackground";
@@ -18,6 +20,18 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, navbar, footer }: LayoutProps) {
+    const router = useRouter();
+
+    // Pages scroll inside #main-scroll, which Next's own scroll reset (window) never touches: go back to the top
+    // on every page change, except in-page anchors (#section links) which the browser scrolls to itself.
+    useEffect(() => {
+        const toTop = (url: string) => {
+            if (url.includes("#")) return;
+            document.getElementById("main-scroll")?.scrollTo({ top: 0, behavior: "auto" });
+        };
+        router.events.on("routeChangeComplete", toTop);
+        return () => router.events.off("routeChangeComplete", toTop);
+    }, [router.events]);
 
     return (<TransitionContextProvider>
         <HeadLayout />

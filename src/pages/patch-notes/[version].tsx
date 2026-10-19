@@ -95,7 +95,7 @@ export default function VersionDetailsPage() {
             <div className="relative">
                 <div aria-hidden className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent)]" style={{ backgroundImage: `url(${image})` }} />
                 <div className="relative">
-                    <PageHeader title={`Patch ${version}`} meta={details ? formatDate(details.publishedAt) : undefined}
+                    <PageHeader compact title={`Patch ${version}`} meta={details ? formatDate(details.publishedAt) : undefined}
                         lead={details?.changelog?.title}
                         crumbs={[{ label: 'Home', href: '/' }, { label: 'Patch notes', href: '/patch-notes' }, { label: version || "…" }]} />
                 </div>

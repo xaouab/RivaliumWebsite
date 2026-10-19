@@ -16,7 +16,7 @@ export default function MatchesPage() {
         {matches.length > 0 && <div className="grid grid-cols-3 gap-3">
             {[["Matches", matches.length], ["Wins", wins], ["Win rate", `${Math.round((wins / matches.length) * 100)}%`]].map(([label, value]) =>
                 <div key={label} className="glass p-4 text-center">
-                    <p className="label-caps text-xs text-lavender/80">{label}</p>
+                    <p className="label-caps caps-sm text-lavender/80">{label}</p>
                     <p className="display text-3xl text-ink tabular-nums">{value}</p>
                 </div>)}
         </div>}

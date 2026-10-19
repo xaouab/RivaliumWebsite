@@ -7,7 +7,8 @@ import Button from "@/components/Button";
 import Notice from "@/components/ui/Notice";
 import PageHeader from "@/components/ui/PageHeader";
 import { api, ApiError, MatchEntry } from "@/lib/api";
-import { rankIcon, rankName } from "@/lib/game";
+import { rankColor, rankIcon, rankName } from "@/lib/game";
+import PlayerTag from "@/components/ui/PlayerTag";
 
 type PublicProfile = {
     id: string;
@@ -50,7 +51,7 @@ export default function PlayerPage() {
             <div className="w-full max-w-4xl mx-auto px-4 flex flex-col gap-5 text-left">
                 {error ? <Notice tone="error" title={error.status === 404 ? "Player not found" : "Something went wrong"}
                     action={<Button small type="frost" content="Back home" href="/" className="!mx-0" />}>
-                    {error.status === 404 ? <>Nobody goes by <strong>{name}#{tag}</strong>. Check the name and tag.</> : error.message}
+                    {error.status === 404 ? <>Nobody goes by <strong>{name}<PlayerTag tag={tag} /></strong>. Check the name and tag.</> : error.message}
                 </Notice>
                 : <>
                     <div className="glass p-5 md:p-6 grid sm:grid-cols-[auto_1fr] gap-5 items-center">
@@ -64,13 +65,13 @@ export default function PlayerPage() {
                                 ["Wins", profile ? wins : "…"],
                                 ["Win rate", profile ? (wins + losses ? `${Math.round((wins / (wins + losses)) * 100)}%` : "—") : "…"],
                             ].map(([label, value]) => <div key={String(label)} className="panel-inset p-3 text-center">
-                                <dt className="label-caps text-[11px] text-lavender/80">{label}</dt>
-                                <dd className="display text-2xl text-ink">{value}</dd>
+                                <dt className="label-caps caps-sm text-lavender/80">{label}</dt>
+                                <dd className="display text-2xl text-ink" style={label === "Rank" && profile ? { color: rankColor(profile.rank?.tier) } : undefined}>{value}</dd>
                             </div>)}
                         </dl>
                     </div>
                     <section className="glass p-5 md:p-6 flex flex-col gap-4" aria-labelledby="recent-matches">
-                        <h2 id="recent-matches" className="display text-xl text-ice">Recent matches</h2>
+                        <h2 id="recent-matches" className="display text-step-2 text-ice">Recent matches</h2>
                         {!profile ? <ListSkeleton /> : profile.recentMatches.length
                             ? <MatchList matches={profile.recentMatches} />
                             : <EmptyState title="No matches yet" />}

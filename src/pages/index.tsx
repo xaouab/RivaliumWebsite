@@ -12,7 +12,7 @@ import SectionTitle from "@/components/ui/SectionTitle";
 import VideoSlot from "@/components/ui/VideoSlot";
 import { rivals } from "@/data/rivals";
 import { api } from "@/lib/api";
-import { formatDate, rankIcon, rankTiers } from "@/lib/game";
+import { formatDate, rankIcon, rankName, rankTiers } from "@/lib/game";
 
 type VersionSummary = { version: string; publishedAt?: number; changelog?: { title?: string; generalText?: string } };
 
@@ -39,34 +39,18 @@ export default function Home() {
             <section aria-labelledby="hero-title" className="hero-stage isolate w-full min-h-[100svh] px-5 pt-28 pb-24 flex flex-col items-center justify-center gap-6 text-center relative">
                 <HeroParallax />
                 <div className="w-full max-w-xl"><Logo /></div>
-                <h1 id="hero-title" className="display text-step-4 text-ink title-halo">Pick your rival. Take the gem.</h1>
-                <p className="font-body text-step-1 text-ink max-w-2xl title-halo">
-                    A competitive 2.5D arena platformer: four rivals, eight-round attack and defense, and movement that rewards the brave.
-                </p>
+                <h1 id="hero-title" className="sr-only">Rivalium, the realm of rivals</h1>
                 <div id="hero-cta" className="flex flex-wrap justify-center items-center gap-4">
                     <Button type="main" big framed content="Play now" Icon={FaDownload} href="/download" />
-                    <a href="#rivals-heading" className="label-caps text-base text-ink hover:text-ice underline-offset-8 hover:underline title-halo px-2 py-3">Meet the rivals</a>
+                    <a href="#rivals-heading" className="label-caps caps-lg text-ink hover:text-ice underline-offset-8 hover:underline title-halo px-2 py-3">Meet the rivals</a>
                 </div>
-                <ul className="flex flex-wrap justify-center gap-2" aria-label="At a glance">
-                    <li className="chip">Pre-alpha on Windows</li>
-                    <li className="chip">{rivals.length} rivals</li>
-                    <li className="chip">{rankTiers.length} rank tiers</li>
-                </ul>
-                {latest && <Link href={`/patch-notes/${latest.version}`} className="group inline-flex items-center gap-3 font-body text-sm text-ink-2 hover:text-ink">
-                    <span className="chip !text-ice">v{latest.version}</span>
-                    <span className="title-halo">{latest.changelog?.title ?? "Latest update"}</span>
-                    <FaArrowRight aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5" />
-                </Link>}
-                <a href="#trailer" className="absolute bottom-6 label-caps text-sm text-ice hover:text-ink title-halo">See the game ↓</a>
+                <a href="#trailer" className="absolute bottom-6 label-caps caps-md text-ice hover:text-ink title-halo">See the game ↓</a>
             </section>
 
-            <div className="max-w-6xl mx-auto px-5 flex flex-col gap-24 md:gap-36 pb-10">
-                {/* Trailer — offset, not centred. */}
-                <section aria-labelledby="trailer" className="grid lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] gap-8 items-end text-left">
-                    <div className="flex flex-col gap-4 lg:pb-6">
-                        <h2 id="trailer" className="display text-step-4 text-ink title-mark">See it move</h2>
-                        <p className="font-body text-step-1 text-ink-2">Dashes, grapples, ultimates: what a match feels like.</p>
-                    </div>
+            <div className="max-w-6xl mx-auto px-5 pt-20 md:pt-28 flex flex-col gap-24 md:gap-36 pb-10">
+                {/* Trailer: title above, video across the full content width. */}
+                <section aria-labelledby="trailer" className="flex flex-col gap-8 text-left">
+                    <SectionTitle id="trailer" title="See it move" />
                     <VideoSlot className="w-full shadow-2xl" label="Rivalium gameplay trailer" assetId="landing/trailer" />
                 </section>
 
@@ -76,7 +60,6 @@ export default function Home() {
                 {/* Roster */}
                 <section aria-labelledby="rivals-heading" className="flex flex-col gap-8 scroll-mt-28">
                     <SectionTitle id="rivals-heading" title="Choose your rival"
-                        lead="Arrow keys or click. Each one plays differently."
                         action={<Button type="no-back" content="All rivals" href="/wiki/rivals" />} />
                     <CharacterSelect />
                 </section>
@@ -86,27 +69,27 @@ export default function Home() {
                     <SectionTitle id="systems-heading" title="What you'll master" />
                     <div className="grid grid-cols-1 md:grid-cols-6 gap-4 text-left">
                         <Link href="/wiki/mechanics/movement" className="glass card-link md:col-span-4 md:row-span-2 p-6 flex flex-col gap-4">
-                            <h3 className="display text-step-3 text-ink">Movement</h3>
+                            <h3 className="display text-step-3 text-gradient-soft w-fit">Movement</h3>
                             <p className="font-body text-ink-2 max-w-lg">Double jump, slide, a dash on a three-second cooldown, a grappling hook and wall grabs. Every rival shares the kit.</p>
                             <VideoSlot className="mt-auto" aspect="wide" label="Dash into grapple into wall grab" assetId="landing/movement" />
                         </Link>
                         <Link href="/wiki/gameplay/gem" className="glass card-link md:col-span-2 p-6 flex flex-col gap-3">
-                            <h3 className="display text-step-2 text-ink">The gem</h3>
-                            <p className="font-body text-ink-2">One defender carries it. Take them down to score.</p>
+                            <h3 className="display text-step-2 text-gradient-soft w-fit">The gem</h3>
+                            <p className="font-body text-ink-2">One defender carries it, and only their team knows who. Find them and take them down to score.</p>
                         </Link>
                         <Link href="/wiki/gameplay/ranked" className="glass card-link md:col-span-2 p-6 flex flex-col gap-4">
-                            <h3 className="display text-step-2 text-ink">Ranks</h3>
-                            <div className="flex -space-x-2" aria-label="Bronze to Grandrival">
-                                {[1, 3, 5, 6, 7, 9].map(tier => <Image key={tier} src={rankIcon(tier)} alt="" width={40} height={40} className="w-10 h-10 object-contain" />)}
+                            <h3 className="display text-step-2 text-gradient-soft w-fit">Ranks</h3>
+                            <div className="grid grid-cols-5 gap-2" aria-label={`All ${rankTiers.length} ranks, ${rankName(0)} to ${rankName(rankTiers.length - 1)}`}>
+                                {rankTiers.map((_, tier) => <Image key={tier} src={rankIcon(tier)} alt={rankName(tier)} title={rankName(tier)} width={40} height={40} className="w-10 h-10 object-contain" />)}
                             </div>
-                            <p className="font-body text-ink-2">Bronze to Grandrival.</p>
+                            <p className="font-body text-ink-2">{rankName(0)} to {rankName(rankTiers.length - 1)}, {rankTiers.length} tiers.</p>
                         </Link>
                         <Link href="/wiki/mechanics/orbstones" className="glass card-link md:col-span-3 p-6 flex flex-col gap-3">
-                            <h3 className="display text-step-2 text-ink">Orbstones</h3>
+                            <h3 className="display text-step-2 text-gradient-soft w-fit">Orbstones</h3>
                             <p className="font-body text-ink-2">Lethality, Vitality, Haste. Up to ten stacks of each.</p>
                         </Link>
                         <Link href="/wiki/mechanics/status-effects" className="glass card-link md:col-span-3 p-6 flex flex-col gap-3">
-                            <h3 className="display text-step-2 text-ink">19 status effects</h3>
+                            <h3 className="display text-step-2 text-gradient-soft w-fit">19 status effects</h3>
                             <p className="font-body text-ink-2">From Swiftness and Shield to Bleed and Shattering.</p>
                         </Link>
                     </div>
@@ -133,7 +116,7 @@ export default function Home() {
 
                 {/* Repeat the action, plainly. */}
                 <section className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-t border-ice/10 pt-12 text-left">
-                    <p className="display text-step-3 text-ink max-w-[20ch]">Ready when you are.</p>
+                    <p className="display text-step-3 text-gradient-soft is-soft w-fit max-w-[20ch]">Ready when you are.</p>
                     <div className="flex flex-wrap gap-4">
                         <Button type="main" big content="Download" Icon={FaDownload} href="/download" />
                         <Button type="no-back" big content="Join Discord" Icon={FaDiscord} href="https://discord.rivalium.online" external />

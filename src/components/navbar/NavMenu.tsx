@@ -63,7 +63,7 @@ export default function NavMenu({ group, open, active, onOpenChange }: Props) {
             aria-controls={`menu-${group.id}`}
             onClick={() => onOpenChange(!open)}
             onKeyDown={onTriggerKey}
-            className={`relative h-full inline-flex items-center gap-1.5 px-3 xl:px-4 label-caps text-[15px] whitespace-nowrap transition-colors
+            className={`relative h-full inline-flex items-center gap-1.5 px-3 xl:px-4 label-caps caps-nav whitespace-nowrap transition-colors
                 ${open || active ? "text-ink" : "text-ice hover:text-ink"}
                 after:absolute after:left-3 after:right-3 after:bottom-1 after:h-[3px] after:rounded-full after:bg-frost after:transition-transform after:duration-200
                 ${active ? "after:scale-x-100" : "after:scale-x-0"}`}
@@ -76,27 +76,29 @@ export default function NavMenu({ group, open, active, onOpenChange }: Props) {
             ref={panel}
             id={`menu-${group.id}`}
             onKeyDown={onPanelKey}
-            className={`absolute left-1/2 top-[calc(100%+10px)] -translate-x-1/2 w-[22rem] origin-top glass-overlay !bg-paper-3/95 rounded-2xl p-2 text-left z-menu
-                transition-[opacity,transform] ${open ? "opacity-100 scale-100 duration-200 ease-brand" : "opacity-0 scale-95 pointer-events-none duration-150"}`}
+            className={`absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2 origin-top glass-overlay !bg-paper-3/95 p-2 text-left z-menu flex gap-1
+                transition-[opacity,transform] ${open ? "opacity-100 translate-y-0 duration-200 ease-brand" : "opacity-0 -translate-y-1 pointer-events-none duration-150"}`}
             aria-hidden={!open}
         >
-            <ul className="flex flex-col">
-                {group.items.map(item => {
-                    const content = <>
-                        {item.icon && <span className="grid place-items-center w-10 h-10 shrink-0 rounded-lg bg-paper text-frost"><item.icon aria-hidden /></span>}
-                        <span className="flex flex-col min-w-0">
-                            <span className="label-caps text-sm text-ink">{item.label}</span>
-                            {item.description && <span className="font-body text-sm text-ink-2 leading-snug">{item.description}</span>}
-                        </span>
-                    </>;
-                    const className = "flex items-center gap-3 rounded-xl px-3 py-2.5 min-h-[56px] hover:bg-paper-4 focus-visible:bg-paper-4 transition-colors";
-                    return <li key={item.href}>
-                        {item.external
-                            ? <a data-menu-item tabIndex={open ? 0 : -1} href={item.href} target={item.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className={className} onClick={() => close()}>{content}</a>
-                            : <Link data-menu-item tabIndex={open ? 0 : -1} href={item.href} className={className} onClick={() => close()}>{content}</Link>}
-                    </li>;
-                })}
-            </ul>
+            {group.sections.map((section, index) => <div key={section.label ?? index} className={`flex flex-col w-56 ${index > 0 ? "border-l border-ice/10 pl-1" : ""}`}>
+                {section.label && <p className="label-caps caps-sm text-ink-3 px-2.5 pt-1.5 pb-1">{section.label}</p>}
+                <ul className="flex flex-col">
+                    {section.items.map(item => {
+                        const content = <>
+                            {item.image
+                                ? <img src={item.image} alt="" width={20} height={20} className="w-5 h-5 shrink-0 [image-rendering:pixelated] border" style={{ borderColor: item.accent ?? "transparent" }} />
+                                : item.icon ? <item.icon aria-hidden className="w-5 shrink-0 text-[13px] text-frost" /> : <span className="w-5 shrink-0" />}
+                            <span className="label-caps caps-lg text-ink-2 group-hover/item:text-ink truncate">{item.label}</span>
+                        </>;
+                        const className = "group/item flex items-center gap-2.5 px-2.5 h-10 hover:bg-paper-4 focus-visible:bg-paper-4 transition-colors";
+                        return <li key={item.href}>
+                            {item.external
+                                ? <a data-menu-item tabIndex={open ? 0 : -1} href={item.href} target={item.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className={className} onClick={() => close()}>{content}</a>
+                                : <Link data-menu-item tabIndex={open ? 0 : -1} href={item.href} className={className} onClick={() => close()}>{content}</Link>}
+                        </li>;
+                    })}
+                </ul>
+            </div>)}
         </div>
     </div>;
 }

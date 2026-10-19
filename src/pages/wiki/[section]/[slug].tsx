@@ -21,7 +21,6 @@ export default function WikiArticlePage({ section, slug }: Props) {
         </Head>
         <WikiLayout
             title={article.title}
-            lead={article.summary}
             crumbs={[{ label: "Home", href: "/" }, { label: "Wiki", href: "/wiki" }, { label: sectionLabels[section], href: `/wiki/${section}` }, { label: article.title }]}
         >
             <div className="prose-rivalium [&_figure]:my-6">

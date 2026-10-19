@@ -32,7 +32,7 @@ button, input, select, textarea { font-family: inherit; }
 
 .secondary-text, .secondary-text * { font-family: var(--font-body); }
 
-// Scrollbar: same grabber as the client's VScrollBar theme (frost, 10px radius).
+// Scrollbar: same frost grabber as the client VScrollBar, square like every other shape.
 .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: oklch(var(--frost-lch) / .65) transparent;
@@ -41,7 +41,7 @@ button, input, select, textarea { font-family: inherit; }
     &::-webkit-scrollbar-track, &::-webkit-scrollbar-button { background: transparent; }
     &::-webkit-scrollbar-thumb {
         background-color: oklch(var(--frost-lch) / .65);
-        border-radius: 10px;
+        border-radius: 0;
         border: 2px solid transparent;
         background-clip: padding-box;
     }

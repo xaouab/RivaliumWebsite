@@ -7,8 +7,9 @@ import Button from "@/components/Button";
 import Notice from "@/components/ui/Notice";
 import { useAuth } from "@/contexts/AuthContext";
 import { api, ApiError, MatchEntry, Transaction } from "@/lib/api";
-import { currencies, formatDate, formatNumber, rankIcon, rankName } from "@/lib/game";
+import { currencies, formatDate, formatNumber, rankColor, rankIcon, rankName } from "@/lib/game";
 import { useApi } from "@/lib/useApi";
+import PlayerTag from "@/components/ui/PlayerTag";
 
 export default function AccountOverview() {
     return <AccountLayout title="Overview" description="Your player card, balances and latest activity.">
@@ -49,9 +50,9 @@ function Overview() {
                 <div className="flex items-center gap-4">
                     <Image src={rankIcon(user.rank?.tier)} alt="" width={72} height={72} className="w-[72px] h-[72px] object-contain" />
                     <div className="min-w-0">
-                        <p className="display text-3xl text-ink truncate">{user.playerName ?? user.username}<span className="text-lavender/85 text-xl">#{user.playerTag}</span></p>
+                        <p className="display text-3xl text-ink truncate">{user.playerName ?? user.username}<PlayerTag tag={user.playerTag} className="text-xl" /></p>
                         {user.title && <p className="font-body text-ice">{user.title}</p>}
-                        <p className="font-body text-sm text-lavender/80">{rankName(user.rank?.tier)}{user.rank?.tier ? ` · Division ${(user.rank?.division ?? 0) + 1}` : ""} · Member since {formatDate(user.createdAt)}</p>
+                        <p className="font-body text-sm text-lavender/80"><span style={{ color: rankColor(user.rank?.tier) }}>{rankName(user.rank?.tier)}</span>{user.rank?.tier ? ` · Division ${(user.rank?.division ?? 0) + 1}` : ""} · Member since {formatDate(user.createdAt)}</p>
                     </div>
                 </div>
                 <div>

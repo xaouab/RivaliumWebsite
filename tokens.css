@@ -49,6 +49,8 @@
 
   /* Brand gradient: the logo/wordmark and the drawn title underline only. Never on headline text. */
   --gradient-brand: linear-gradient(90deg, oklch(87.1% 0.128 83), oklch(71.5% 0.062 2), oklch(64% 0.12 320));
+  /* Page-title gradient (all page titles; client battle pass / loot / shop): very light peach → light red. Mirrors UiPalette.Soft*. */
+  --gradient-soft: linear-gradient(90deg, #ffe3cc, #ffc9bd, #ffaaaa);
 
   /* State */
   --success-lch: 87.6% 0.087 145;
@@ -72,10 +74,10 @@
   --space-xl: 3rem; --space-2xl: 4.5rem; --space-3xl: 7rem;
 
   /* Radii */
-  --radius-input: 6px;
-  --radius-button: 8px;
-  --radius-card: 10px; /* references (Riot, Blizzard) keep cards ≤ 8–10px */
-  --radius-pill: 999px;
+  --radius-input: 0;
+  --radius-button: 0;
+  --radius-card: 0; /* owner: square edges on every button and shape */
+  --radius-pill: 0;
 
   /* Motion: three easings, three durations */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

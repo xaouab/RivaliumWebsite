@@ -82,11 +82,11 @@ export const articles: WikiArticle[] = [
         slug: "gem",
         section: "gameplay",
         title: "The gem",
-        summary: "Defenders protect a gem holder; attackers score by taking them down or breaking orbstones.",
+        summary: "Defenders protect a secret gem holder; attackers score by finding and taking them down, or by breaking orbstones.",
         source: "client/gameplay/game/modes/standard/StandardGame.Gem.cs, StandardGame.Events.cs",
         body: () => <>
             <VideoSlot label="Attackers focusing the defending gem holder" assetId="gameplay/gem" />
-            <p>At the start of every round, one living player on the <strong>defending</strong> team is chosen at random to carry the gem. Everyone can see who it is.</p>
+            <p>At the start of every round, one living player on the <strong>defending</strong> team is chosen at random to carry the gem. <strong>Only the defenders know who it is</strong>; attackers have to work it out.</p>
             <ul>
                 <li><strong>Killing the gem holder</strong> earns the killer a gem, and a new holder is chosen from the defenders still alive.</li>
                 <li><strong>Destroying an orbstone</strong> as an attacker also earns a gem. See <Link href="/wiki/mechanics/orbstones">Orbstones</Link>.</li>
@@ -94,8 +94,9 @@ export const articles: WikiArticle[] = [
             <p>Gems and gem plants are tracked per player and shown in your match stats.</p>
             <h2>Tips</h2>
             <ul>
-                <li>As a defender, stay close to your gem holder; protection and healing abilities matter most here.</li>
-                <li>As an attacker, break orbstones when the holder is too well protected.</li>
+                <li>As a defender, protect your gem holder without making it obvious who they are.</li>
+                <li>As an attacker, watch who the defenders cover and heal: that&apos;s usually the holder.</li>
+                <li>As an attacker, break orbstones when the holder is too well protected or you can&apos;t tell who it is.</li>
             </ul>
         </>,
     },
@@ -139,7 +140,7 @@ export const articles: WikiArticle[] = [
                 {ranks.map(rank => <figure key={rank} className="panel-inset flex flex-col items-center gap-2 p-3">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={`/images/ranks/${rank.toLowerCase()}.png`} alt="" width={48} height={48} className="w-12 h-12 object-contain" loading="lazy" />
-                    <figcaption className="label-caps text-xs text-ice">{rank}</figcaption>
+                    <figcaption className="label-caps caps-sm text-ice">{rank}</figcaption>
                 </figure>)}
             </div>
             <p>Matchmaking uses a separate skill rating, so the players you meet are close to your level even early in a season.</p>
@@ -232,6 +233,42 @@ export const articles: WikiArticle[] = [
                 </tbody>
             </table>
             <p>Picking up an orb gives you a stack of its element, up to <strong>10 stacks</strong> of each. Breaking an orbstone while attacking also earns you a <Link href="/wiki/gameplay/gem">gem</Link>.</p>
+        </>,
+    },
+    {
+        slug: "orbs",
+        section: "mechanics",
+        title: "Orbs",
+        summary: "Where orbs come from, how to pick them up and how long they last.",
+        source: "client/gameplay/orb/Orb.cs, client/gameplay/player/stats/Player.Life.cs, client/gameplay/game/modes/standard/StandardGame.Gem.cs",
+        body: () => <>
+            <p>Orbs are small elemental pickups. Each one carries one element: <strong>Lethality</strong> (red), <strong>Vitality</strong> (blue) or <strong>Haste</strong> (white).</p>
+            <h2>Where they come from</h2>
+            <ul>
+                <li>Breaking an <Link href="/wiki/mechanics/orbstones">orbstone</Link> releases orbs of that orbstone&apos;s element.</li>
+                <li>A player who is taken down drops one orb of a random element where they fell.</li>
+            </ul>
+            <h2>Picking them up</h2>
+            <p>Touch an orb to collect it; it flies to you and adds a <Link href="/wiki/mechanics/permanent-orbs">permanent orb</Link> stack. An orb that nobody collects disappears after <strong>15 seconds</strong>.</p>
+        </>,
+    },
+    {
+        slug: "permanent-orbs",
+        section: "mechanics",
+        title: "Permanent orbs",
+        summary: "Element stacks you keep for the whole match, up to 10 of each.",
+        source: "client/gameplay/player/stats/Player.Elements.cs, Player.Life.cs, Player.Stats.cs, client/gameplay/ui/hud/HudScoreboard.cs",
+        body: () => <>
+            <p>Every orb you collect becomes a permanent stack of its element. Stacks last for the rest of the match, up to <strong>10 stacks</strong> per element. The scoreboard&apos;s <strong>P</strong> column shows each player&apos;s total.</p>
+            <table>
+                <thead><tr><th>Element</th><th>Per stack</th><th>At 10 stacks</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Lethality</strong></td><td>+2% damage on every hit you deal (at least +1)</td><td>+20% damage</td></tr>
+                    <tr><td><strong>Vitality</strong></td><td>−2.5% damage from every hit you take (at least −1), +3% healing received</td><td>−25% damage taken, +30% healing</td></tr>
+                    <tr><td><strong>Haste</strong></td><td>−4% cooldowns, +2% movement speed</td><td>−40% cooldowns, +20% speed</td></tr>
+                </tbody>
+            </table>
+            <p>The <strong>Lethargy</strong> <Link href="/wiki/mechanics/status-effects">status effect</Link> reduces haste while it lasts.</p>
         </>,
     },
     {

@@ -19,9 +19,10 @@ export default function Footer() {
     return <footer className="w-full mt-16 border-t border-ice/10 bg-paper/90 backdrop-blur-md text-left">
         <div className="max-w-7xl mx-auto px-5 py-12 grid gap-10 md:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
             <div className="flex flex-col gap-4">
-                <Link href="/" className="flex items-center gap-2 w-fit" aria-label="Rivalium home">
-                    <Image src={Icon} alt="" className="h-9 w-auto" />
-                    <span className="display text-xl text-gradient">Rivalium</span>
+                {/* Same lockup as the navbar: emblem exactly as tall as the wordmark's letters (0.685em with the 118% size-adjust). */}
+                <Link href="/" className="flex items-center gap-[0.25em] w-fit text-[28px]" aria-label="Rivalium home">
+                    <Image src={Icon} alt="" className="h-[0.64em] w-auto" />
+                    <span className="display leading-none text-gradient">Rivalium</span>
                 </Link>
                 <p className="font-body text-sm text-ink-2 max-w-xs">
                     A competitive 2.5D arena platformer by Kaura Interactive. Master your rivals, take the gem, climb the ranks.
@@ -34,7 +35,7 @@ export default function Footer() {
                 </div>
             </div>
             {groups.map(group => <nav key={group.title} aria-label={group.title}>
-                <h2 className="label-caps text-sm text-ice mb-3">{group.title}</h2>
+                <h2 className="label-caps caps-md text-ice mb-3">{group.title}</h2>
                 <ul className="flex flex-col gap-2.5 font-body text-sm">
                     {group.links.map(([label, href]) => <li key={href}>
                         <Link href={href} className="text-ink-2 hover:text-ink transition-colors whitespace-nowrap">{label}</Link>
@@ -43,7 +44,7 @@ export default function Footer() {
             </nav>)}
         </div>
         <div className="border-t border-ice/10">
-            <p className="max-w-7xl mx-auto px-5 py-5 font-body text-xs text-ink-3">
+            <p className="max-w-7xl mx-auto px-5 py-5 font-body text-sm text-ink-3">
                 © {new Date().getFullYear()} Kaura Interactive. Rivalium and its logo are trademarks of Kaura Interactive.
             </p>
         </div>

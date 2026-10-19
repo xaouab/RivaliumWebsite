@@ -9,24 +9,67 @@ import { useAuth } from "@/contexts/AuthContext";
 
 type Platform = "windows" | "mac" | "linux" | "other";
 
-const specs = {
-    minimum: [
-        ["OS", "Windows 7/8/8.1/10 (64-bit)"],
-        ["Processor", "Intel Core i3 (6th gen or newer) or AMD equivalent"],
-        ["Graphics", "Nvidia GTX 750 Ti or AMD equivalent (2 GB VRAM)"],
-        ["Memory", "4 GB RAM"],
-        ["Storage", "1 to 2 GB"],
-        ["Network", "Stable broadband (1 Mbps up/down)"],
-    ],
-    recommended: [
-        ["OS", "Windows 10/11 (64-bit)"],
-        ["Processor", "Intel Core i5 (9th gen or newer) or AMD Ryzen 5"],
-        ["Graphics", "Nvidia GTX 1650 or AMD RX 570 (4 GB VRAM)"],
-        ["Memory", "8 GB RAM"],
-        ["Storage", "3 GB"],
-        ["Network", "Low-latency broadband (5 to 10 Mbps up/down)"],
-    ],
+type SpecOs = "windows" | "mac" | "linux";
+type Specs = { minimum: [string, string][]; recommended: [string, string][] };
+
+/** Requirements per OS. macOS and Linux are the planned targets (Godot 4: Metal / Vulkan); builds aren't out yet. */
+const specsByOs: Record<SpecOs, Specs> = {
+    windows: {
+        minimum: [
+            ["OS", "Windows 7/8/8.1/10 (64-bit)"],
+            ["Processor", "Intel Core i3 (6th gen or newer) or AMD equivalent"],
+            ["Graphics", "Nvidia GTX 750 Ti or AMD equivalent (2 GB VRAM)"],
+            ["Memory", "4 GB RAM"],
+            ["Storage", "1 to 2 GB"],
+            ["Network", "Stable broadband (1 Mbps up/down)"],
+        ],
+        recommended: [
+            ["OS", "Windows 10/11 (64-bit)"],
+            ["Processor", "Intel Core i5 (9th gen or newer) or AMD Ryzen 5"],
+            ["Graphics", "Nvidia GTX 1650 or AMD RX 570 (4 GB VRAM)"],
+            ["Memory", "8 GB RAM"],
+            ["Storage", "3 GB"],
+            ["Network", "Low-latency broadband (5 to 10 Mbps up/down)"],
+        ],
+    },
+    mac: {
+        minimum: [
+            ["OS", "macOS 12 Monterey"],
+            ["Processor", "Apple M1, or Intel Core i5 (2017 or newer)"],
+            ["Graphics", "Metal-capable GPU"],
+            ["Memory", "8 GB unified memory / RAM"],
+            ["Storage", "1 to 2 GB"],
+            ["Network", "Stable broadband (1 Mbps up/down)"],
+        ],
+        recommended: [
+            ["OS", "macOS 14 Sonoma or newer"],
+            ["Processor", "Apple M1 Pro / M2 or newer"],
+            ["Graphics", "Integrated Apple GPU (10-core or more)"],
+            ["Memory", "16 GB unified memory"],
+            ["Storage", "3 GB"],
+            ["Network", "Low-latency broadband (5 to 10 Mbps up/down)"],
+        ],
+    },
+    linux: {
+        minimum: [
+            ["OS", "64-bit distro, e.g. Ubuntu 22.04 or SteamOS 3"],
+            ["Processor", "Intel Core i3 (6th gen or newer) or AMD equivalent"],
+            ["Graphics", "Vulkan 1.2 GPU: GTX 750 Ti / RX 470 (2 GB VRAM), current Mesa or Nvidia driver"],
+            ["Memory", "4 GB RAM"],
+            ["Storage", "1 to 2 GB"],
+            ["Network", "Stable broadband (1 Mbps up/down)"],
+        ],
+        recommended: [
+            ["OS", "Ubuntu 24.04, Fedora 40 or newer"],
+            ["Processor", "Intel Core i5 (9th gen or newer) or AMD Ryzen 5"],
+            ["Graphics", "Nvidia GTX 1650 or AMD RX 570 (4 GB VRAM)"],
+            ["Memory", "8 GB RAM"],
+            ["Storage", "3 GB"],
+            ["Network", "Low-latency broadband (5 to 10 Mbps up/down)"],
+        ],
+    },
 };
+const osLabel: Record<SpecOs, string> = { windows: "Windows", mac: "macOS", linux: "Linux" };
 
 const steps = [
     { title: "Create your account", text: "One account for the game and the website." },
@@ -51,7 +94,13 @@ function detectPlatform(): Platform {
 export default function DownloadPage() {
     const { status } = useAuth();
     const [platform, setPlatform] = useState<Platform>("windows");
-    useEffect(() => setPlatform(detectPlatform()), []);
+    const [specOs, setSpecOs] = useState<SpecOs>("windows");
+    useEffect(() => {
+        const detected = detectPlatform();
+        setPlatform(detected);
+        setSpecOs(detected === "other" ? "windows" : detected);
+    }, []);
+    const specs = specsByOs[specOs];
 
     return <>
         <Head>
@@ -63,21 +112,25 @@ export default function DownloadPage() {
             <section aria-labelledby="download-title" className="max-w-6xl mx-auto px-5 pt-32 md:pt-40 pb-14 grid lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] gap-10 items-center text-left">
                 <div className="flex flex-col items-start gap-5">
                     <nav aria-label="Breadcrumb" className="font-body text-sm text-ink-2 title-halo"><Link href="/" className="hover:text-ink">Home</Link> <span aria-hidden>›</span> <span className="text-ink">Download</span></nav>
-                    <h1 id="download-title" className="display text-step-6 text-ink title-mark title-halo">Download</h1>
-                    <p className="font-body text-step-1 text-ink max-w-xl title-halo">Rivalium is in pre-alpha. Expect rough edges, frequent updates and plenty of fights.</p>
+                    <h1 id="download-title" className="display text-step-6 text-gradient-soft is-soft w-fit title-mark">Download</h1>
                     {platform !== "windows" && <Notice tone="info">
                         {platform === "other" ? "Rivalium runs on Windows PCs." : `Rivalium isn't available on ${platform === "mac" ? "macOS" : "Linux"} yet.`} You can still download the Windows build for another computer.
                     </Notice>}
                     <div id="hero-cta" className="flex flex-col items-start gap-3">
                         <Button type="main" big content="Download for Windows" Icon={FaWindows} href={`${apiUrl}/cdn/download/windows`} external />
-                        <p className="font-body text-sm text-ink-2">64-bit Windows, pre-alpha build. macOS and Linux will come later.</p>
                     </div>
                 </div>
                 <div className="glass p-6 md:p-7">
-                    <h2 id="requirements" className="display text-step-2 text-ink mb-5">System requirements</h2>
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                        <h2 id="requirements" className="display text-step-2 text-gradient-soft is-soft w-fit">System requirements</h2>
+                        <div className="segmented" role="tablist" aria-label="Operating system">
+                            {(Object.keys(osLabel) as SpecOs[]).map(os => <button key={os} type="button" role="tab" aria-selected={specOs === os} onClick={() => setSpecOs(os)}>{osLabel[os]}</button>)}
+                        </div>
+                    </div>
+                    {specOs !== "windows" && <p className="label-caps caps-sm text-gold mb-4">Planned · not available on {osLabel[specOs]} yet</p>}
                     <div className="grid sm:grid-cols-2 gap-6">
                         {(["minimum", "recommended"] as const).map(kind => <div key={kind}>
-                            <h3 className="label-caps text-sm text-ice mb-2">{kind}</h3>
+                            <h3 className="label-caps caps-md text-ice mb-2">{kind}</h3>
                             <dl className="font-body text-sm divide-y divide-ice/10">
                                 {specs[kind].map(([label, value]) => <div key={label} className="flex flex-col py-2">
                                     <dt className="text-ink-3">{label}</dt>
@@ -103,15 +156,13 @@ export default function DownloadPage() {
                         </li>)}
                     </ol>
                     <div className="order-1 lg:order-2 flex flex-col gap-4">
-                        <h2 id="install" className="display text-step-4 text-ink title-mark">Three steps to your first match</h2>
-                        <p className="font-body text-step-1 text-ink-2">One account works in the game and on this site. Install, sign in, and you&apos;re in the lobby.</p>
+                        <h2 id="install" className="display text-step-4 text-gradient-soft is-soft w-fit title-mark">Three steps to your first match</h2>
                     </div>
                 </section>
 
                 <section aria-labelledby="faq" className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-10 items-start">
                     <div className="flex flex-col gap-4">
-                        <h2 id="faq" className="display text-step-4 text-ink title-mark">Questions</h2>
-                        <p className="font-body text-ink-2">Still stuck? The team answers on Discord and by email.</p>
+                        <h2 id="faq" className="display text-step-4 text-gradient-soft is-soft w-fit title-mark">Questions</h2>
                         <div className="flex flex-wrap gap-3">
                             <Button type="no-back" content="Support" href="/support" />
                             <Button type="no-back" content="Discord" Icon={FaDiscord} href="https://discord.rivalium.online" external />

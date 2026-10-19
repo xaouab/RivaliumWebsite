@@ -1,9 +1,13 @@
 // Brand faces. `swap` shows text immediately in the fallback, then swaps in the brand face,
 // so a slow connection never hides content (typography: font loading strategy).
+// Motion Control's capitals are only ~0.59em tall (the body face's are ~0.70em), so every small label in it read
+// undersized. size-adjust scales the face once, everywhere (110%, owner-tuned: 118% read too big).
+// Title tokens (--step-2…6) were sized against 118%, so titles also came down ~7% with this.
 @font-face {
   font-family: mainFont;
   src: url(motioncontrol.otf) format("opentype");
   font-display: swap;
+  size-adjust: 110%;
 }
 
 @font-face {

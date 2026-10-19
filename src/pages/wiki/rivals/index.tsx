@@ -8,7 +8,6 @@ export default function RivalsIndex() {
         <Head><title>Rivals - Rivalium Wiki</title></Head>
         <WikiLayout
             title="Rivals"
-            lead="Four rivals, each with five abilities and their own way to win a fight."
             crumbs={[{ label: "Home", href: "/" }, { label: "Wiki", href: "/wiki" }, { label: "Rivals" }]}
         >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -5,7 +5,7 @@ import VideoSlot from "@/components/ui/VideoSlot";
 // One round of the standard mode. Durations: client/gameplay/game/modes/standard/StandardGame.cs.
 const phases = [
     { name: "Preparation", seconds: 10, title: "Read the map", text: "Both teams spawn on their side and can't move yet. Ten seconds to call a plan and pick your lane.", asset: "landing/round-preparation" },
-    { name: "First Battle", seconds: 60, title: "Find the gem holder", text: "One defender carries the gem. Defenders keep them alive; attackers hunt them. Taking the holder down earns a gem.", asset: "landing/round-first-battle" },
+    { name: "First Battle", seconds: 60, title: "Find the gem holder", text: "One defender secretly carries the gem: only their team knows who. Defenders keep them alive; attackers hunt for them. Taking the holder down earns a gem.", asset: "landing/round-first-battle" },
     { name: "Second Battle", seconds: 60, title: "Orbstones rise", text: "Three orbstones appear: Lethality, Vitality, Haste. Break one as an attacker for a gem; grab orbs to stack their element.", asset: "landing/round-second-battle" },
     { name: "Final Battle", seconds: 120, title: "Last push", text: "Orbstones respawn for two final minutes. Whoever controls the gem and the orbstones here usually takes the round.", asset: "landing/round-final-battle" },
 ];
@@ -39,8 +39,7 @@ export default function RoundSequence() {
         <div className="hidden lg:block">
             <div className="sticky top-28 flex flex-col gap-7">
                 <div>
-                    <h2 id="round-heading" className="display text-step-4 text-ink title-mark">One round, four phases</h2>
-                    <p className="font-body text-step-1 text-ink-2 mt-4 max-w-md">Eight rounds a match. Sides swap every round. Scroll to play one.</p>
+                    <h2 id="round-heading" className="display text-step-4 text-gradient-soft is-soft w-fit title-mark">One round, four phases</h2>
                 </div>
                 <div aria-hidden className="flex flex-col gap-2">
                     <div className="flex h-3 rounded-full overflow-hidden bg-paper border border-ice/15">
@@ -59,7 +58,7 @@ export default function RoundSequence() {
                         className={`flex items-baseline justify-between gap-4 rounded-lg px-4 py-3 border transition-colors duration-200
                             ${index === active ? "bg-paper-3 border-frost/50" : "border-transparent"}`}
                         aria-current={index === active ? "step" : undefined}>
-                        <span className={`label-caps text-base ${index === active ? "text-ink" : "text-ink-3"}`}>{index + 1}. {phase.name}</span>
+                        <span className={`label-caps caps-lg ${index === active ? "text-ink" : "text-ink-3"}`}>{index + 1}. {phase.name}</span>
                         <span className={`font-body tabular-nums ${index === active ? "text-ink" : "text-ink-3"}`}>{clock(phase.seconds)}</span>
                     </li>)}
                 </ol>
@@ -71,7 +70,7 @@ export default function RoundSequence() {
 
         {/* Scrolling pane */}
         <div className="flex flex-col gap-6 lg:gap-0">
-            <h2 className="lg:hidden display text-step-4 text-ink title-mark">One round, four phases</h2>
+            <h2 className="lg:hidden display text-step-4 text-gradient-soft is-soft w-fit title-mark">One round, four phases</h2>
             {phases.map((phase, index) => <section
                 key={phase.name}
                 ref={element => { panels.current[index] = element; }}

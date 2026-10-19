@@ -2,8 +2,12 @@
 // Enum orders mirror accounts/src/enums/RankTier.ts and accounts/src/components/match/MatchTypes.ts.
 
 export const rankTiers = ["Unranked", "Bronze", "Silver", "Gold", "Platinum", "Amber", "Diamond", "Sentinel", "Mercenary", "Grandrival"];
-export const rankName = (tier?: number) => rankTiers[tier ?? 0] ?? "Unranked";
-export const rankIcon = (tier?: number) => `/images/ranks/${rankName(tier).toLowerCase()}.png`;
+const rankKey = (tier?: number) => rankTiers[tier ?? 0] ?? "Unranked";
+export const rankName = (tier?: number) => rankKey(tier) === "Grandrival" ? "Grand Rival" : rankKey(tier);
+export const rankIcon = (tier?: number) => `/images/ranks/${rankKey(tier).toLowerCase()}.png`;
+// Rank text colours sampled from each icon and lifted for navy glass; mirrors client RankStyle.cs.
+const rankColors = ["#d8b49a", "#ffc08e", "#f0eeec", "#ffe6a7", "#8cfcd4", "#ffa77c", "#8fd8f7", "#ff9aa6", "#a3b6ff", "#dca8ff"];
+export const rankColor = (tier?: number) => rankColors[tier ?? 0] ?? rankColors[0];
 
 export const matchTypes = ["Casual", "Ranked", "Training"];
 export const matchTypeName = (type?: number) => matchTypes[type ?? 0] ?? "Match";

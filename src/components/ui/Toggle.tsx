@@ -27,7 +27,7 @@ export default function Toggle({ label, description, checked, disabled, onChange
                 aria-describedby={description ? `${id}-desc` : undefined}
                 onChange={(event) => onChange(event.target.checked)}
             />
-            <span className="block w-11 h-6 rounded-full bg-night/60 border border-ice/20 transition-colors duration-200 peer-checked:bg-frost/70 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-ice peer-focus-visible:outline-offset-2" />
+            <span className="block w-11 h-6 rounded-full bg-night/60 border border-ice/20 transition-colors duration-200 peer-checked:bg-frost/70 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-ice peer-focus-visible:outline-offset-0" />
             <span className="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ease-brand peer-checked:translate-x-5" />
         </span>
     </label>;

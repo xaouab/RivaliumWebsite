@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MatchEntry, Transaction } from "@/lib/api";
 import { currencyIcon, currencyLabel, formatDate, formatNumber, matchTypeName, timeAgo, transactionLabels } from "@/lib/game";
+import PlayerTag from "@/components/ui/PlayerTag";
 
 const resultStyles = {
     WIN: "text-success border-success/40 bg-success/10",
@@ -12,7 +13,7 @@ const resultStyles = {
 export function MatchList({ matches, linkPlayers = true }: { matches: MatchEntry[]; linkPlayers?: boolean }) {
     return <ul className="flex flex-col gap-2">
         {matches.map(match => <li key={match.id} className="panel-inset p-3 md:p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className={`label-caps text-sm w-16 text-center py-1 rounded-md border ${resultStyles[match.result]}`}>{match.result}</span>
+            <span className={`label-caps caps-md w-16 text-center py-1 rounded-md border ${resultStyles[match.result]}`}>{match.result}</span>
             <div className="flex-1 min-w-0 font-body">
                 <p className="text-ink">
                     {matchTypeName(match.type)} · <span className="tabular-nums">{match.yourScore} – {match.opponentScore}</span>
@@ -21,8 +22,8 @@ export function MatchList({ matches, linkPlayers = true }: { matches: MatchEntry
                     vs {match.opponents.length === 0 ? "unknown" : match.opponents.map((opponent, index) => <span key={opponent.id}>
                         {index > 0 && ", "}
                         {linkPlayers && opponent.playerName && opponent.playerTag
-                            ? <Link className="hover:text-ink underline-offset-2 hover:underline" href={`/players/${encodeURIComponent(opponent.playerName)}/${opponent.playerTag}`}>{opponent.playerName}#{opponent.playerTag}</Link>
-                            : `${opponent.playerName ?? "Player"}${opponent.playerTag ? `#${opponent.playerTag}` : ""}`}
+                            ? <Link className="hover:text-ink underline-offset-2 hover:underline" href={`/players/${encodeURIComponent(opponent.playerName)}/${opponent.playerTag}`}>{opponent.playerName}<PlayerTag tag={opponent.playerTag} /></Link>
+                            : <>{opponent.playerName ?? "Player"}<PlayerTag tag={opponent.playerTag} /></>}
                     </span>)}
                 </p>
             </div>
