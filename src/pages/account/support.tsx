@@ -17,7 +17,7 @@ const states: Record<string, { label: string; classes: string }> = {
 export default function SupportTicketsPage() {
     const { data, error, loading, reload } = useApi<{ tickets: Ticket[] }>("/account/tickets");
 
-    return <AccountLayout title="Support" description="Messages you've sent to the Rivalium team. Replies arrive by email.">
+    return <AccountLayout title="Support">
         <Card actions={<Button small type="frost" content="New message" href="/support" />} title="Your tickets">
             {error ? <Notice tone="error" action={<Button small type="frost" content="Retry" onClick={reload} />}>{error}</Notice>
                 : loading && !data ? <ListSkeleton />

@@ -40,7 +40,7 @@ export default function PersonalPage() {
         }
     };
 
-    return <AccountLayout title="Personal info" description="Only you and the Rivalium team can see this. It's used for support and, later, for billing.">
+    return <AccountLayout title="Personal info">
         <Card>
             {error ? <Notice tone="error">{error}</Notice> : loading && !data ? <div className="skeleton h-64" /> :
                 <form onSubmit={save} className="flex flex-col gap-5" noValidate>

@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from "next";
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Image from "next/image";
 import Link from "next/link";
 import WikiLayout from "@/components/wiki/WikiLayout";
@@ -12,10 +12,8 @@ type Props = { rival: Rival; previous: Pick<Rival, "id" | "name">; next: Pick<Ri
 export default function RivalPage({ rival, previous, next }: Props) {
     const accent = rival.archetype_color;
     return <>
-        <Head>
-            <title>{`${rival.name}, ${rival.title} - Rivalium Wiki`}</title>
-            <meta name="description" content={`${rival.name} is a ${rival.archetype}. Abilities, stats and how to play them.`} />
-        </Head>
+        <Seo title={`${rival.name}, ${rival.title} - Wiki`} description={`${rival.name} is a ${rival.archetype} rival in Rivalium. Abilities, cooldowns, stats and how to play them.`}
+            image={{ path: rivalAvatar(rival.id), alt: `${rival.name}, ${rival.title}` }} type="article" />
         <WikiLayout
             title={rival.name}
             crumbs={[{ label: "Home", href: "/" }, { label: "Wiki", href: "/wiki" }, { label: "Rivals", href: "/wiki/rivals" }, { label: rival.name }]}

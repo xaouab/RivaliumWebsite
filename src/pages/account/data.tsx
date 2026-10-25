@@ -9,7 +9,7 @@ import { AccountSettings, api, ApiError } from "@/lib/api";
 import { formatDate } from "@/lib/game";
 
 export default function DataPage() {
-    return <AccountLayout title="Your data" description="Download a copy of your account, or ask us to delete it.">
+    return <AccountLayout title="Your data">
         <ExportCard />
         <DeletionCard />
     </AccountLayout>;

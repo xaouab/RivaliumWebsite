@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -45,9 +45,9 @@ export default function PlayerPage() {
     const losses = profile?.matchHistory?.totalLosses ?? 0;
 
     return <>
-        <Head><title>{`${name}#${tag} - Rivalium`}</title></Head>
+        <Seo title={`${name}#${tag}`} type="profile" noindex />
         <main className="w-full min-h-screen pb-16">
-            <PageHeader title={name || "Player"} lead={profile?.title} crumbs={[{ label: "Home", href: "/" }, { label: "Players" }, { label: `${name}#${tag}` }]} compact />
+            <PageHeader title={name || "Player"} crumbs={[{ label: "Home", href: "/" }, { label: "Players" }, { label: `${name}#${tag}` }]} compact />
             <div className="w-full max-w-4xl mx-auto px-4 flex flex-col gap-5 text-left">
                 {error ? <Notice tone="error" title={error.status === 404 ? "Player not found" : "Something went wrong"}
                     action={<Button small type="frost" content="Back home" href="/" className="!mx-0" />}>

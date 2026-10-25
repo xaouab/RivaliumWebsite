@@ -432,3 +432,33 @@ textarea.field-input { min-height: 9rem; resize: vertical; line-height: 1.5; }
     :root { --color-rule: oklch(var(--rule-lch) / .5); --color-rule-strong: oklch(var(--rule-lch) / .85); --ink-3-lch: 85% 0.04 280; }
     .glass, .glass-strong, .glass-raised { background: var(--color-paper); }
 }
+
+// Caps labels keep the display face inside articles (`.prose-rivalium *` resets fonts to the body face).
+.prose-rivalium .label-caps, .prose-rivalium .display { font-family: var(--font-display); }
+
+// ---------------------------------------------------------------------------
+// Status effect bar, coloured like the game HUD's (client/gameplay/ui/hud/effect/UIEffect.tscn): a gradient that
+// fades out on the right, icon and caps label.
+.fx-bar {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    height: 2.25rem;
+    min-width: 11rem;
+    padding: 0 2rem 0 .75rem;
+    color: var(--fx-ink);
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(90deg, var(--fx-stops));
+        -webkit-mask-image: linear-gradient(90deg, #000 60%, transparent 98%);
+        mask-image: linear-gradient(90deg, #000 60%, transparent 98%);
+    }
+}
+
+// Element swatch: the orb's colour ramp as a square tile.
+.fx-swatch { box-shadow: inset 0 0 0 1px oklch(100% 0 0 / .15), 0 6px 18px -8px oklch(8% 0.03 272 / .8); }

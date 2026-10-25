@@ -1,34 +1,33 @@
 import { GetStaticPaths, GetStaticProps } from "next";
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Link from "next/link";
+import WikiContents from "@/components/wiki/WikiContents";
 import WikiLayout from "@/components/wiki/WikiLayout";
-import { articles, articlesIn, getArticle, sectionLabels, WikiSection } from "@/data/wiki";
+import { articles, articlesIn, getArticle, readingPath, wikiHref, sectionLabels, WikiSection } from "@/data/wiki";
 
 type Props = { section: WikiSection; slug: string };
 
 export default function WikiArticlePage({ section, slug }: Props) {
     // Article bodies are JSX, so props carry only the keys and the article is looked up here.
     const article = getArticle(section, slug)!;
-    const siblings = articlesIn(section);
+    const inPath = readingPath.includes(article);
+    const siblings = inPath ? readingPath : articlesIn(section);
     const index = siblings.indexOf(article);
     const previous = siblings[index - 1];
     const next = siblings[index + 1];
 
     return <>
-        <Head>
-            <title>{`${article.title} - Rivalium Wiki`}</title>
-            <meta name="description" content={article.summary} />
-        </Head>
+        <Seo title={`${article.title} - Wiki`} description={article.summary} type="article" />
         <WikiLayout
             title={article.title}
             crumbs={[{ label: "Home", href: "/" }, { label: "Wiki", href: "/wiki" }, { label: sectionLabels[section], href: `/wiki/${section}` }, { label: article.title }]}
         >
-            <div className="prose-rivalium [&_figure]:my-6">
-                {article.body()}
-            </div>
-            <nav aria-label="More articles" className="flex justify-between gap-3 mt-10 pt-6 border-t border-ice/10 font-body">
-                {previous ? <Link href={`/wiki/${section}/${previous.slug}`} className="text-ice hover:text-ink">← {previous.title}</Link> : <span />}
-                {next ? <Link href={`/wiki/${section}/${next.slug}`} className="text-ice hover:text-ink text-right">{next.title} →</Link> : <span />}
+            {article.earlyLore && <p className="font-body text-sm text-lavender mb-6"><span className="chip">Early lore</span></p>}
+            <p className="font-body text-lavender mb-6 max-w-prose">{article.summary}</p>
+            <WikiContents>{article.body()}</WikiContents>
+            <nav aria-label="Related topics" className="flex flex-col sm:flex-row justify-between gap-4 mt-10 pt-6 border-t border-ice/10 font-body">
+                {previous ? <Link href={wikiHref(previous)} className="text-ice hover:text-ink">Previous: {previous.title}</Link> : <Link href="/wiki" className="text-ice hover:text-ink">Wiki home</Link>}
+                {next ? <Link href={wikiHref(next)} className="text-ice hover:text-ink sm:text-right">Next: {next.title}</Link> : <Link href={inPath ? "/wiki/lore/world" : "/wiki"} className="text-ice hover:text-ink sm:text-right">Next: {inPath ? "Early lore" : "Wiki home"}</Link>}
             </nav>
         </WikiLayout>
     </>;

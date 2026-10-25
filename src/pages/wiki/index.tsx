@@ -1,17 +1,18 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Link from "next/link";
 import WikiLayout from "@/components/wiki/WikiLayout";
 import RivalCard from "@/components/wiki/RivalCard";
 import { rivals } from "@/data/rivals";
-import { articlesIn, sectionLabels, WikiSection } from "@/data/wiki";
+import { articlesIn, readingPath, sectionLabels, WikiSection } from "@/data/wiki";
 
 export default function WikiHome() {
     return <>
-        <Head><title>Wiki - Rivalium</title></Head>
+        <Seo title="Wiki" description="Rivalium reference: rivals, controls, match rules, skill tier, rank tiers, rewards and early lore." />
         <WikiLayout
             title="Rivalium Wiki"
             crumbs={[{ label: "Home", href: "/" }, { label: "Wiki" }]}
         >
+            <p className="font-body text-lavender mb-8">Rivals, match rules and progression at a glance.</p>
             <section aria-labelledby="wiki-rivals" className="mb-10">
                 <div className="flex items-baseline justify-between mb-4">
                     <h2 id="wiki-rivals" className="display text-step-3 text-ice">Rivals</h2>
@@ -22,13 +23,15 @@ export default function WikiHome() {
                 </div>
             </section>
 
-            {(["gameplay", "mechanics"] as WikiSection[]).map(section => <section key={section} aria-labelledby={`wiki-${section}`} className="mb-10 last:mb-0">
+            {(Object.keys(sectionLabels) as WikiSection[]).map(section => <section key={section} aria-labelledby={`wiki-${section}`} className="mb-10 last:mb-0">
                 <h2 id={`wiki-${section}`} className="display text-step-3 text-ice mb-4">{sectionLabels[section]}</h2>
                 <ul className="grid sm:grid-cols-2 gap-3">
-                    {articlesIn(section).map(article => <li key={article.slug}>
-                        <Link href={`/wiki/${section}/${article.slug}`} className="panel-inset block h-full p-4 transition-colors hover:border-ice/40">
-                            <span className="label-caps text-ink">{article.title}</span>
-                            <span className="block font-body text-sm text-lavender/80 mt-1">{article.summary}</span>
+                    {articlesIn(section).sort((a, b) => {
+                        const order = (article: typeof a) => { const index = readingPath.indexOf(article); return index < 0 ? readingPath.length : index; };
+                        return order(a) - order(b);
+                    }).map(article => <li key={article.slug}>
+                        <Link href={`/wiki/${section}/${article.slug}`} className="block py-3 border-b border-ice/15 text-ice hover:text-ink">
+                            <span className="font-body">{article.title}</span>
                         </Link>
                     </li>)}
                 </ul>

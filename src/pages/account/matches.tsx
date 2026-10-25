@@ -12,7 +12,7 @@ export default function MatchesPage() {
     const matches = data?.matches ?? [];
     const wins = matches.filter(match => match.result === "WIN").length;
 
-    return <AccountLayout title="Match history" description="Your most recent finished matches.">
+    return <AccountLayout title="Match history">
         {matches.length > 0 && <div className="grid grid-cols-3 gap-3">
             {[["Matches", matches.length], ["Wins", wins], ["Win rate", `${Math.round((wins / matches.length) * 100)}%`]].map(([label, value]) =>
                 <div key={label} className="glass p-4 text-center">

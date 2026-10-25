@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { FaBook, FaDiscord, FaEnvelope, FaListCheck, FaPaperPlane } from "react-icons/fa6";
@@ -40,12 +40,12 @@ export default function SupportPage() {
     };
 
     return <>
-        <Head><title>Support - Rivalium</title></Head>
+        <Seo title="Support" description="Get help with Rivalium: wiki, patch notes, Discord, and a contact form that opens a support ticket answered by email." />
         <main className="w-full min-h-screen pb-16">
-            <PageHeader title="Support" lead="Most answers are one click away. If not, write to us and we'll reply by email."
+            <PageHeader title="Support"
                 crumbs={[{ label: "Home", href: "/" }, { label: "Support" }]} />
 
-            <div className="max-w-5xl mx-auto px-4 flex flex-col gap-6 text-left">
+            <div className="max-w-6xl mx-auto px-5 flex flex-col gap-6 text-left">
                 <ul className="glass divide-y md:divide-y-0 md:divide-x divide-ice/10 grid md:grid-cols-3 overflow-hidden">
                     {shortcuts.map(item => <li key={item.title}>
                         <Link href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noreferrer" : undefined}
@@ -58,10 +58,7 @@ export default function SupportPage() {
 
                 <div className="grid lg:grid-cols-[1.5fr_1fr] gap-6 items-start">
                     <section className="glass-strong p-5 md:p-8 flex flex-col gap-5" aria-labelledby="contact-title">
-                        <div>
-                            <h2 id="contact-title" className="display text-step-3 text-ice">Contact us</h2>
-                            <p className="font-body text-lavender mt-1">We reply by email. You&apos;ll get a confirmation with your ticket number right away.</p>
-                        </div>
+                        <h2 id="contact-title" className="display text-step-3 text-ice">Contact us</h2>
                         {state.sentId
                             ? <div className="flex flex-col gap-4">
                                 <Notice tone="success" title="Message sent">

@@ -42,7 +42,7 @@ export default function Navbar() {
 
     const groupActive = (id: string) => {
         const group = navGroups.find(item => item.id === id)!;
-        // "/wiki" (Game guide) only counts on its own page, so rival pages light up Rivals, not Game Info.
+        // "/wiki" (Game guide) only counts on its own page, so rival pages light up Rivals, not Discover.
         return groupItems(group).some(item => !item.external && (path === item.href || (item.href !== "/wiki" && path.startsWith(item.href + "/"))));
     };
 
@@ -63,11 +63,12 @@ export default function Navbar() {
 
     return <nav ref={navRef} aria-label="Main" className="fixed top-0 inset-x-0 z-nav p-2 flex flex-col pointer-events-none">
         <div className="pointer-events-auto glass-strong !bg-paper/90 w-full h-[80px] px-3 md:px-5 flex items-center gap-2">
-            {/* Brand lockup: R emblem + the real logo artwork (not typed text). The emblem matches the logo's letter
-                height (~68% of the artwork; the dagger hangs below the baseline). */}
+            {/* Brand lockup: R emblem + the real logo artwork (not typed text). In logo.webp the letters fill rows
+                24–134 of 184 (60% of the height, centred at 43%); the dagger hangs below. At 48px the letters are 29px
+                tall, so the emblem is 29px, and the artwork drops 3px so the letters' centre meets the emblem's. */}
             <Link href="/" className="shrink-0 flex items-center gap-2.5 pr-2" aria-label="Rivalium home">
-                <Image className="h-[30px] w-auto" src={Icon} alt="" priority />
-                <Image className="h-11 w-auto hidden sm:block drop-shadow-[0_2px_6px_rgb(0_0_0/0.5)]" src={Logo} alt="Rivalium" priority />
+                <Image className="h-[29px] w-auto" src={Icon} alt="" priority />
+                <Image className="h-12 w-auto translate-y-[3px] hidden sm:block drop-shadow-[0_2px_6px_rgb(0_0_0/0.5)]" src={Logo} alt="Rivalium" priority />
             </Link>
             <div className="hidden lg:flex flex-1 justify-center items-stretch h-full">
                 {navOrder.map(entry => {

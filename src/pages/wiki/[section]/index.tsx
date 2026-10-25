@@ -1,5 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from "next";
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Link from "next/link";
 import WikiLayout from "@/components/wiki/WikiLayout";
 import { articlesIn, sectionLabels, WikiSection } from "@/data/wiki";
@@ -9,7 +9,7 @@ type Props = { section: WikiSection };
 export default function WikiSectionPage({ section }: Props) {
     const label = sectionLabels[section];
     return <>
-        <Head><title>{`${label} - Rivalium Wiki`}</title></Head>
+        <Seo title={`${label} - Wiki`} description={`Rivalium ${label.toLowerCase()} guides: ${articlesIn(section).map(article => article.title.toLowerCase()).join(", ")}.`} />
         <WikiLayout title={label} crumbs={[{ label: "Home", href: "/" }, { label: "Wiki", href: "/wiki" }, { label }]}>
             <ul className="flex flex-col gap-3">
                 {articlesIn(section).map(article => <li key={article.slug}>

@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -26,7 +26,7 @@ const sections: { href: string; label: string; icon: IconType }[] = [
 ];
 
 /** Signed-in shell: redirects to sign-in when needed, structural sidebar + one content column. */
-export default function AccountLayout({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
+export default function AccountLayout({ title, children }: { title: string; children: ReactNode }) {
     const router = useRouter();
     const { status, user, signOut } = useAuth();
 
@@ -43,7 +43,7 @@ export default function AccountLayout({ title, description, children }: { title:
     const path = router.pathname;
 
     return <>
-        <Head><title>{`${title} - Your Rivalium account`}</title></Head>
+        <Seo title={`${title} - Your account`} noindex />
         <main className="w-full min-h-screen pt-24 md:pt-28 pb-16 px-4">
             <div className="w-full max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 items-start">
                 <aside className="w-full lg:w-64 lg:shrink-0 lg:sticky lg:top-24 glass-strong p-4 text-left">
@@ -80,10 +80,7 @@ export default function AccountLayout({ title, description, children }: { title:
                 </aside>
 
                 <section className="flex-1 min-w-0 w-full flex flex-col gap-5 text-left" aria-labelledby="account-title">
-                    <header className="flex flex-col gap-1">
-                        <h1 id="account-title" className="display text-step-5 text-gradient-soft is-soft w-fit title-mark">{title}</h1>
-                        {description && <p className="font-body text-ink/90 title-halo">{description}</p>}
-                    </header>
+                    <h1 id="account-title" className="display text-step-5 text-gradient-soft is-soft w-fit title-mark">{title}</h1>
                     {user.deletionRequestedAt && path !== "/account/data" && <Notice tone="warning" title="Account deletion requested"
                         action={<Link href="/account/data" className="font-body text-sm underline shrink-0">Manage</Link>}>
                         Your account is scheduled for deletion. You can cancel this from Your data.

@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import { FaDownload, FaPaperPlane } from "react-icons/fa6";
 import Button from "@/components/Button";
 
@@ -14,7 +14,7 @@ export default function ButtonSheet() {
         { role: "Loading", node: () => <Button content="Saving" loading /> },
     ];
     return <main className="w-full min-h-screen pt-32 pb-16 px-6">
-        <Head><title>Buttons - Rivalium</title><meta name="robots" content="noindex" /></Head>
+        <Seo title="Buttons" noindex />
         <div className="max-w-5xl mx-auto glass p-8 flex flex-col gap-6 text-left">
             <h1 className="display text-step-5 text-gradient-soft is-soft w-fit title-mark">Website buttons</h1>
             <div className="grid grid-cols-[16rem_1fr_1fr] gap-x-6 gap-y-5 items-center">

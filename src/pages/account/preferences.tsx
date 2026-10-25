@@ -29,7 +29,7 @@ export default function PreferencesPage() {
         }
     };
 
-    return <AccountLayout title="Preferences" description="Choose which emails you get from us.">
+    return <AccountLayout title="Preferences">
         <Card title="Email">
             {error ? <Notice tone="error">{error}</Notice> : loading && !data ? <div className="skeleton h-28" /> : data && <>
                 <div className="divide-y divide-ice/10">

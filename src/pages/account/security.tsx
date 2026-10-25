@@ -14,7 +14,7 @@ const failed = (failure: unknown, fallback: string): Status => ({ error: failure
 
 export default function SecurityPage() {
     const { data } = useApi<AccountSettings>("/account");
-    return <AccountLayout title="Sign-in & security" description="Your email, password and website sessions.">
+    return <AccountLayout title="Sign-in & security">
         <EmailCard />
         <PasswordCard />
         <SessionsCard lastLoginAt={data?.lastLoginAt} />

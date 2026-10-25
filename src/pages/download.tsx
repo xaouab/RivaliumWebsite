@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaDiscord, FaWindows } from "react-icons/fa6";
@@ -103,16 +103,13 @@ export default function DownloadPage() {
     const specs = specsByOs[specOs];
 
     return <>
-        <Head>
-            <title>Download Rivalium - The Realm of Rivals</title>
-            <meta name="description" content="Download Rivalium for Windows. System requirements, install steps and FAQ." />
-        </Head>
+        <Seo title="Download" description="Download Rivalium for Windows. System requirements, install steps and answers to common questions before your first match." />
         <main className="w-full min-h-screen pb-16">
             {/* Split Studio: text half / proof half, alternating direction. */}
             <section aria-labelledby="download-title" className="max-w-6xl mx-auto px-5 pt-32 md:pt-40 pb-14 grid lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)] gap-10 items-center text-left">
                 <div className="flex flex-col items-start gap-5">
                     <nav aria-label="Breadcrumb" className="font-body text-sm text-ink-2 title-halo"><Link href="/" className="hover:text-ink">Home</Link> <span aria-hidden>›</span> <span className="text-ink">Download</span></nav>
-                    <h1 id="download-title" className="display text-step-6 text-gradient-soft is-soft w-fit title-mark">Download</h1>
+                    <h1 id="download-title" className="display text-step-5 text-gradient-soft is-soft w-fit title-mark">Download</h1>
                     {platform !== "windows" && <Notice tone="info">
                         {platform === "other" ? "Rivalium runs on Windows PCs." : `Rivalium isn't available on ${platform === "mac" ? "macOS" : "Linux"} yet.`} You can still download the Windows build for another computer.
                     </Notice>}

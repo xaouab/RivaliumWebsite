@@ -76,21 +76,21 @@ export default function NavMenu({ group, open, active, onOpenChange }: Props) {
             ref={panel}
             id={`menu-${group.id}`}
             onKeyDown={onPanelKey}
-            className={`absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2 origin-top glass-overlay !bg-paper-3/95 p-2 text-left z-menu flex gap-1
+            className={`absolute left-1/2 top-[calc(100%+8px)] -translate-x-1/2 origin-top glass-overlay !bg-paper-3/95 p-1.5 text-left z-menu flex gap-1
                 transition-[opacity,transform] ${open ? "opacity-100 translate-y-0 duration-200 ease-brand" : "opacity-0 -translate-y-1 pointer-events-none duration-150"}`}
             aria-hidden={!open}
         >
-            {group.sections.map((section, index) => <div key={section.label ?? index} className={`flex flex-col w-56 ${index > 0 ? "border-l border-ice/10 pl-1" : ""}`}>
-                {section.label && <p className="label-caps caps-sm text-ink-3 px-2.5 pt-1.5 pb-1">{section.label}</p>}
+            {group.sections.map((section, index) => <div key={section.label ?? index} className={`flex flex-col w-48 ${index > 0 ? "border-l border-ice/10 pl-1" : ""}`}>
+                {section.label && <p className="label-caps caps-sm text-ink-3 px-2 pt-1 pb-0.5">{section.label}</p>}
                 <ul className="flex flex-col">
                     {section.items.map(item => {
                         const content = <>
                             {item.image
-                                ? <img src={item.image} alt="" width={20} height={20} className="w-5 h-5 shrink-0 [image-rendering:pixelated] border" style={{ borderColor: item.accent ?? "transparent" }} />
-                                : item.icon ? <item.icon aria-hidden className="w-5 shrink-0 text-[13px] text-frost" /> : <span className="w-5 shrink-0" />}
-                            <span className="label-caps caps-lg text-ink-2 group-hover/item:text-ink truncate">{item.label}</span>
+                                ? <img src={item.image} alt="" width={20} height={20} className="w-[18px] h-[18px] shrink-0 [image-rendering:pixelated] border" style={{ borderColor: item.accent ?? "transparent" }} />
+                                : item.icon ? <item.icon aria-hidden className="w-[18px] shrink-0 text-[12px] text-frost" /> : <span className="w-[18px] shrink-0" />}
+                            <span className="label-caps caps-md text-ink-2 group-hover/item:text-ink truncate">{item.label}</span>
                         </>;
-                        const className = "group/item flex items-center gap-2.5 px-2.5 h-10 hover:bg-paper-4 focus-visible:bg-paper-4 transition-colors";
+                        const className = "group/item flex items-center gap-2 px-2 h-8 hover:bg-paper-4 focus-visible:bg-paper-4 transition-colors";
                         return <li key={item.href}>
                             {item.external
                                 ? <a data-menu-item tabIndex={open ? 0 : -1} href={item.href} target={item.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className={className} onClick={() => close()}>{content}</a>

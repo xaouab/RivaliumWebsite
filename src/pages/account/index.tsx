@@ -12,7 +12,7 @@ import { useApi } from "@/lib/useApi";
 import PlayerTag from "@/components/ui/PlayerTag";
 
 export default function AccountOverview() {
-    return <AccountLayout title="Overview" description="Your player card, balances and latest activity.">
+    return <AccountLayout title="Overview">
         <Overview />
     </AccountLayout>;
 }

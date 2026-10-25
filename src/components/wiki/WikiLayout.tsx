@@ -9,7 +9,7 @@ type NavGroup = { label: string; href: string; items: { label: string; href: str
 
 const groups: NavGroup[] = [
     { label: "Rivals", href: "/wiki/rivals", items: rivals.map(rival => ({ label: rival.name, href: `/wiki/rivals/${rival.id}`, accent: rival.archetype_color })) },
-    ...(["gameplay", "mechanics"] as WikiSection[]).map(section => ({
+    ...(Object.keys(sectionLabels) as WikiSection[]).map(section => ({
         label: sectionLabels[section],
         href: `/wiki/${section}`,
         items: articlesIn(section).map(article => ({ label: article.title, href: `/wiki/${section}/${article.slug}` })),
@@ -38,7 +38,7 @@ export default function WikiLayout({ title, crumbs, children }: {
                             aria-current={active ? "page" : undefined}
                             className={`block font-body text-sm py-1.5 pl-3 -ml-px border-l-2 transition-colors ${active ? "border-frost text-ink" : "border-transparent text-lavender hover:text-ink hover:border-ice/40"}`}
                         >
-                            {item.accent && <span aria-hidden className="inline-block w-2 h-2 rounded-full mr-2 align-middle" style={{ background: item.accent }} />}
+                            {item.accent && <span aria-hidden className="inline-block w-2 h-2 mr-2 align-middle" style={{ background: item.accent }} />}
                             {item.label}
                         </Link>
                     </li>;

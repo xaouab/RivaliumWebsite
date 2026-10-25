@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord, FaEnvelope, FaInstagram } from "react-icons/fa6";
 import Icon from "@/assets/images/logo/icon/icon.webp";
+import { openCookieSettings } from "@/lib/consent";
 
 const groups = [
     { title: "Game", links: [["Download", "/download"], ["Rivals", "/wiki/rivals"], ["Wiki", "/wiki"], ["Patch notes", "/patch-notes"]] },
@@ -40,6 +41,9 @@ export default function Footer() {
                     {group.links.map(([label, href]) => <li key={href}>
                         <Link href={href} className="text-ink-2 hover:text-ink transition-colors whitespace-nowrap">{label}</Link>
                     </li>)}
+                    {group.title === "Help" && <li>
+                        <button type="button" onClick={openCookieSettings} className="text-ink-2 hover:text-ink transition-colors whitespace-nowrap">Cookie settings</button>
+                    </li>}
                 </ul>
             </nav>)}
         </div>

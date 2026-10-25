@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from "@/components/Seo";
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -90,13 +90,12 @@ export default function VersionDetailsPage() {
     const image = details?.changelog?.imageUrl || DefaultSplash.src;
 
     return <>
-        <Head><title>{`Patch ${version} - Rivalium`}</title></Head>
+        <Seo title={`Patch ${version}`} description={details?.changelog?.title ? `Rivalium patch ${version}: ${details.changelog.title}` : `What changed in Rivalium patch ${version}.`} type="article" />
         <main className="w-full min-h-screen pb-16">
             <div className="relative">
                 <div aria-hidden className="absolute inset-x-0 top-0 h-[60vh] bg-cover bg-center opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent)]" style={{ backgroundImage: `url(${image})` }} />
                 <div className="relative">
                     <PageHeader compact title={`Patch ${version}`} meta={details ? formatDate(details.publishedAt) : undefined}
-                        lead={details?.changelog?.title}
                         crumbs={[{ label: 'Home', href: '/' }, { label: 'Patch notes', href: '/patch-notes' }, { label: version || "…" }]} />
                 </div>
             </div>

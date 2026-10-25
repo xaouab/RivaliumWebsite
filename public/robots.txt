@@ -1,3 +1,10 @@
-# https://www.robotstxt.org/robotstxt.html
+# Rivalium website crawl rules.
 User-agent: *
-Disallow:
+Allow: /
+# Private or per-user pages (also marked noindex).
+Disallow: /account
+Disallow: /portal
+Disallow: /players/
+Disallow: /design/
+
+Sitemap: https://rivalium.online/sitemap.xml

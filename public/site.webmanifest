@@ -1,59 +1,40 @@
 {
-    "name": "Rivalium",
-    "short_name": "Rivalium",
-    "description": "A fast-paced, competitive multiplayer platformer game where players face off in intense battles with unique characters and abilities.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#02236b",
-    "theme_color": "#5478c7",
-    "orientation": "landscape",
-    "icons": [
-      {
-        "src": "/icons/favicon-256x256.png",
-        "sizes": "256x256",
-        "type": "image/png"
-      },
-      {
-        "src": "/icons/favicon-180x180.png",
-        "sizes": "180x180",
-        "type": "image/png"
-      },
-      {
-        "src": "/icons/favicon-128x128.png",
-        "sizes": "128x128",
-        "type": "image/png"
-      },
-      {
-        "src": "/icons/favicon-32x32.png",
-        "sizes": "32x32",
-        "type": "image/png"
-      }
-    ],
-    "screenshots": [
-      {
-        "src": "/images/splash.webp",
-        "sizes": "1456x816",
-        "type": "image/webp"
-      }
-    ],
-    "prefer_related_applications": true,
-    "related_applications": [
-      {
-        "platform": "windows",
-        "url": "https://rivalium.online/download",
-        "id": "com.rivalium.game.windows"
-      },
-      {
-        "platform": "macos",
-        "url": "https://rivalium.online/download",
-        "id": "com.rivalium.game.macos"
-      },
-      {
-        "platform": "linux",
-        "url": "https://rivalium.online/download",
-        "id": "com.rivalium.game.linux"
-      }
-    ],
-    "lang": "en-US"
-  }
-  
+  "name": "Rivalium",
+  "short_name": "Rivalium",
+  "description": "Rivalium is a competitive 2.5D arena platformer for Windows.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030422",
+  "theme_color": "#030422",
+  "icons": [
+    {
+      "src": "/icons/favicon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/favicon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/favicon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/splash.webp",
+      "sizes": "1456x816",
+      "type": "image/webp"
+    }
+  ],
+  "lang": "en-US",
+  "id": "/"
+}

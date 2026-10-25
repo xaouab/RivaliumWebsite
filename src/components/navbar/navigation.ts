@@ -1,7 +1,7 @@
 import { IconType } from "react-icons";
 import {
-    FaBolt, FaBook, FaCircleDot, FaCoins, FaDesktop, FaFileContract, FaFlag, FaGem, FaHeadset, FaKeyboard,
-    FaLayerGroup, FaMedal, FaPersonRunning, FaShieldHalved, FaUserGear, FaUsers, FaWandMagicSparkles,
+    FaBolt, FaBook, FaCircleDot, FaCoins, FaFlag, FaGem, FaKeyboard,
+    FaLayerGroup, FaMedal, FaPersonRunning, FaUsers, FaWandMagicSparkles,
 } from "react-icons/fa6";
 import { rivalAvatar, rivals } from "@/data/rivals";
 
@@ -15,11 +15,11 @@ export type NavGroup = { id: string; label: string; href?: string; sections: Nav
  */
 export const navGroups: NavGroup[] = [
     // Naming follows AAA game sites (LoL "Game Overview / Champions", Valorant "Game Info / Agents",
-    // Overwatch "Game Info / Heroes"): the roster gets its own entry, rules and systems live under Game Info,
+    // Overwatch "Game Info / Heroes"): the roster gets its own entry, rules and systems live under Discover,
     // and the wiki home is the "Game guide" inside it rather than a separate button.
     {
-        id: "game-info",
-        label: "Game Info",
+        id: "discover",
+        label: "Discover",
         href: "/wiki",
         sections: [
             {
@@ -38,9 +38,9 @@ export const navGroups: NavGroup[] = [
                     { label: "Movement", href: "/wiki/mechanics/movement", icon: FaPersonRunning },
                     { label: "Abilities", href: "/wiki/mechanics/abilities", icon: FaBolt },
                     { label: "Effects", href: "/wiki/mechanics/status-effects", icon: FaWandMagicSparkles },
-                    { label: "Orbs", href: "/wiki/mechanics/orbs", icon: FaCircleDot },
-                    { label: "Permanent orbs", href: "/wiki/mechanics/permanent-orbs", icon: FaLayerGroup },
+                    { label: "Elements", href: "/wiki/mechanics/elements", icon: FaCircleDot },
                     { label: "Orbstones", href: "/wiki/mechanics/orbstones", icon: FaGem },
+                    { label: "Permanent orbs", href: "/wiki/mechanics/permanent-orbs", icon: FaLayerGroup },
                     { label: "Economy", href: "/wiki/mechanics/economy", icon: FaCoins },
                 ],
             },
@@ -57,30 +57,17 @@ export const navGroups: NavGroup[] = [
             ],
         }],
     },
-    {
-        id: "support",
-        label: "Support",
-        href: "/support",
-        sections: [{
-            items: [
-                { label: "Help & contact", href: "/support", icon: FaHeadset },
-                { label: "Account support", href: "/account/support", icon: FaUserGear },
-                { label: "System requirements", href: "/download#requirements", icon: FaDesktop },
-                { label: "Terms", href: "/legal/terms", icon: FaFileContract },
-                { label: "Privacy", href: "/legal/privacy", icon: FaShieldHalved },
-            ],
-        }],
-    },
 ];
 
 /** Plain top-level links, shown after the menus. */
 export const navLinks: NavLink[] = [
     { label: "Patch notes", href: "/patch-notes" },
+    { label: "Support", href: "/support" },
     { label: "Discord", href: "https://discord.rivalium.online", external: true },
 ];
 
 export const groupItems = (group: NavGroup) => group.sections.flatMap(section => section.items);
 
 /** Desktop bar order: menus and links interleaved. */
-export const navOrder: (NavGroup | NavLink)[] = [navGroups[0], navGroups[1], navLinks[0], navGroups[2], navLinks[1]];
+export const navOrder: (NavGroup | NavLink)[] = [navGroups[0], navGroups[1], ...navLinks];
 export const isGroup = (entry: NavGroup | NavLink): entry is NavGroup => "sections" in entry;

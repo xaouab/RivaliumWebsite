@@ -1,3 +1,4 @@
+import { consentCategories, openCookieSettings } from "@/lib/consent";
 import LegalLayout from "@/components/legal/LegalLayout";
 
 const sections = [
@@ -88,7 +89,20 @@ export default function PrivacyNotice() {
 
             <h2 id="7-cookies-and-tracking-technologies">7. Cookies and Tracking Technologies</h2>
             <p>
-              We use cookies and similar technologies to enhance your experience and analyze service usage. You can manage your cookie preferences through our cookie consent tool. Essential cookies are required for Rivalium’s functionality, while non-essential cookies (e.g., for analytics or marketing) require your consent.
+              We use cookies and similar browser storage. Essential storage is required for Rivalium’s website to work and needs no consent. Everything else is off until you allow it in the cookie notice, and you can change or withdraw your choice at any time from <button type="button" className="underline underline-offset-4" onClick={openCookieSettings}>Cookie settings</button> (also in the footer of every page). Your choice is kept for 6 months, then we ask again.
+            </p>
+            <table>
+              <thead><tr><th scope="col">Category</th><th scope="col">Purpose</th><th scope="col">What is stored</th></tr></thead>
+              <tbody>
+                {consentCategories.map(category => <tr key={category.id}>
+                  <td><strong>{category.label}</strong>{category.locked ? " (always on)" : ""}</td>
+                  <td>{category.text}</td>
+                  <td>{category.examples}</td>
+                </tr>)}
+              </tbody>
+            </table>
+            <p>
+              Browsers that send a Global Privacy Control signal start with every optional category turned off.
             </p>
 
             <h2 id="8-children-s-data">8. Children’s Data</h2>

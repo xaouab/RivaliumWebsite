@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import { ReactNode } from "react";
 import PageHeader from "@/components/ui/PageHeader";
 
@@ -10,7 +10,7 @@ export default function LegalLayout({ title, revised, sections, children }: {
     children: ReactNode;
 }) {
     return <>
-        <Head><title>{`${title} - Rivalium`}</title></Head>
+        <Seo title={title} description={`Rivalium ${title}, last revised ${revised}. How Kaura Interactive runs the game, the website and your account.`} type="article" />
         <main className="w-full min-h-screen pb-16">
             <PageHeader title={title} meta={`Last revised ${revised}`} crumbs={[{ label: "Home", href: "/" }, { label: title }]} compact />
             <div className="max-w-6xl mx-auto px-4 grid lg:grid-cols-[16rem_1fr] gap-6 items-start text-left">

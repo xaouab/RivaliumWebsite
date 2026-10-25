@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -17,7 +17,7 @@ export default function PortalShell({ pageTitle, heading, word, intro, children 
     children: ReactNode;
 }) {
     return <>
-        <Head><title>{`${pageTitle} - Rivalium`}</title></Head>
+        <Seo title={pageTitle} noindex />
         <main className="w-full min-h-screen relative flex">
             <div className="w-full min-h-screen flex flex-col-reverse md:flex-row items-stretch justify-between">
                 <section className="relative min-h-screen w-full sm:w-[70%] md:w-[55%] xl:w-[38%] bg-paper-2/95 border-r border-ice/15 shadow-2xl px-5 sm:px-10 py-8 flex flex-col justify-between gap-8">
@@ -27,7 +27,7 @@ export default function PortalShell({ pageTitle, heading, word, intro, children 
                     </Link>
                     <div className="w-full max-w-md mx-auto flex flex-col gap-6 rise-in">
                         <div className="flex flex-col gap-3 text-center">
-                            <h1 className="display text-step-4 text-gradient-soft is-soft w-fit mx-auto title-mark is-centered">{heading}</h1>
+                            <h1 className="display text-step-5 text-gradient-soft is-soft w-fit mx-auto title-mark is-centered">{heading}</h1>
                             {intro && <div className="font-body text-lavender text-step-0">{intro}</div>}
                         </div>
                         {children}

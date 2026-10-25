@@ -1,4 +1,5 @@
-import Head from "next/head";
+import Seo from "@/components/Seo";
+import { absoluteUrl, SHARE_IMAGE, SITE_DESCRIPTION } from "@/lib/site";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -30,10 +31,20 @@ export default function Home() {
     const latest = versions?.[0];
 
     return <>
-        <Head>
-            <title>Rivalium - The Realm of Rivals</title>
-            <meta name="description" content="Rivalium is a competitive 2.5D arena platformer. Pick a rival, take the gem, climb the ranks." />
-        </Head>
+        <Seo jsonLd={{
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            name: "Rivalium",
+            url: absoluteUrl("/"),
+            description: SITE_DESCRIPTION,
+            image: absoluteUrl(SHARE_IMAGE.path),
+            genre: ["Platformer", "Fighting", "Action"],
+            gamePlatform: "PC",
+            operatingSystem: "Windows 10, Windows 11",
+            applicationCategory: "Game",
+            playMode: "MultiPlayer",
+            publisher: { "@id": absoluteUrl("/#organization") },
+        }} />
         <main className="w-full">
             {/* Hero — full-screen, centred poster over the splash (owner's choice). */}
             <section aria-labelledby="hero-title" className="hero-stage isolate w-full min-h-[100svh] px-5 pt-28 pb-24 flex flex-col items-center justify-center gap-6 text-center relative">

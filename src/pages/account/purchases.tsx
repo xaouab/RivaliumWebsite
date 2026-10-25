@@ -13,7 +13,7 @@ export default function PurchasesPage() {
     const { data, error, loading, reload } = useApi<{ items: Transaction[]; total: number }>("/account/transactions", { page, limit: PAGE_SIZE });
     const pages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
 
-    return <AccountLayout title="Purchases" description="Shop purchases, battle pass upgrades, opened loot, gift codes and currency exchanges.">
+    return <AccountLayout title="Purchases">
         <Card>
             {error ? <Notice tone="error" action={<Button small type="frost" content="Retry" onClick={reload} className="!mx-0" />}>{error}</Notice>
                 : loading && !data ? <ListSkeleton rows={6} />

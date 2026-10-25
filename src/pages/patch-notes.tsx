@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Seo from "@/components/Seo";
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FaArrowRight } from 'react-icons/fa6';
@@ -42,7 +42,7 @@ export default function PatchNotes() {
     const totalPages = Math.max(1, Math.ceil(total / itemsPerPage));
 
     return <>
-        <Head><title>Patch Notes - Rivalium</title></Head>
+        <Seo title="Patch Notes" description="Every Rivalium update: balance changes, new rivals and cosmetics, bug fixes and hotfixes, newest first." />
         <main className="w-full min-h-screen pb-16">
             <PageHeader title="Patch Notes" compact
                 crumbs={[{ label: 'Home', href: '/' }, { label: 'Patch notes' }]} />

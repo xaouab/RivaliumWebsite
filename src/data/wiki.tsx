@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { expandedArticles } from "./wikiExpansion";
 import { ReactNode } from "react";
-import VideoSlot from "@/components/ui/VideoSlot";
+import { EffectList, ElementGrid } from "@/components/wiki/GameEffects";
 
 /*
  * Wiki articles for gameplay and mechanics. Every rule and number here is taken from the game
@@ -8,7 +9,7 @@ import VideoSlot from "@/components/ui/VideoSlot";
  * Video slots are placeholders until clips are recorded; their `assetId` names the clip to capture.
  */
 
-export type WikiSection = "gameplay" | "mechanics";
+export type WikiSection = "getting-started" | "gameplay" | "mechanics" | "progression" | "lore";
 
 export type WikiArticle = {
     slug: string;
@@ -17,102 +18,74 @@ export type WikiArticle = {
     summary: string;
     /** Where the facts come from, for whoever updates the article next. */
     source: string;
+    earlyLore?: boolean;
     body: () => ReactNode;
 };
 
 export const sectionLabels: Record<WikiSection, string> = {
+    "getting-started": "Getting started",
     gameplay: "Gameplay",
     mechanics: "Mechanics",
+    progression: "Progression",
+    lore: "Lore",
 };
 
 const phases = [
-    { name: "Preparation", seconds: "10s", text: "Teams spawn on their side. Nobody can move yet; it's time to read the map and plan." },
-    { name: "First Battle", seconds: "60s", text: "The fight opens. Defenders protect their gem holder, attackers hunt them." },
-    { name: "Second Battle", seconds: "60s", text: "The three orbstones appear on the map." },
-    { name: "Final Battle", seconds: "120s", text: "Orbstones respawn for one last push. They're removed when the round ends." },
+    { name: "Preparation", seconds: "10s", text: "Teams spawn; movement is locked." },
+    { name: "First Battle", seconds: "60s", text: "Defenders protect the gem holder; attackers hunt them." },
+    { name: "Second Battle", seconds: "60s", text: "Three orbstones appear." },
+    { name: "Final Battle", seconds: "120s", text: "Broken orbstones respawn; all disappear at round end." },
 ];
 
-const buffs = [
-    ["Heal", "Restores health."],
-    ["Agility", "Shorter cooldowns and +10% speed."],
-    ["Swiftness", "Increased movement speed."],
-    ["Power", "Increased outgoing damage."],
-    ["Shield", "An extra health bar on top of your own."],
-    ["Redemption", "Ignore the next attack that hits you."],
-    ["Protection", "Invulnerable for the duration."],
-    ["Invisibility", "Enemies can't see you."],
-    ["Overdrive", "Stats maxed out, with Power and Agility."],
-    ["Nullifying", "Immune to debuffs."],
-];
-
-const debuffs = [
-    ["Bleed", "Damage over time."],
-    ["Vulnerability", "Increased incoming damage."],
-    ["Slowness", "Reduced movement speed."],
-    ["Weakened", "Reduced outgoing damage."],
-    ["Shattering", "Stats drop to zero."],
-    ["Impotence", "Grounded, can't cast and -50% speed."],
-    ["Lethargy", "Reduced haste."],
-    ["Blindness", "Your view is blurred."],
-    ["Decay", "-80% healing received."],
-];
-
-const ranks = ["Unranked", "Bronze", "Silver", "Gold", "Platinum", "Amber", "Diamond", "Sentinel", "Mercenary", "Grandrival"];
+const ranks = ["Unranked", "Bronze", "Silver", "Gold", "Platinum", "Amber", "Diamond", "Sentinel", "Mercenary", "Grand Rival"];
 
 export const articles: WikiArticle[] = [
+    ...expandedArticles,
     {
         slug: "match-flow",
         section: "gameplay",
         title: "How a match works",
-        summary: "Eight rounds of attack and defense, four phases per round, and a sudden death to settle it.",
+        summary: "Standard mode’s rounds, objectives and result.",
         source: "client/gameplay/game/modes/standard/StandardGame.cs",
         body: () => <>
-            <VideoSlot label="A full round from Preparation to Final Battle, sped up" assetId="gameplay/match-flow" />
-            <p>A standard match is played between two teams over <strong>8 rounds</strong>. Every round the teams switch sides: one attacks, the other defends.</p>
-            <h2>The four phases of a round</h2>
-            <ol>
-                {phases.map(phase => <li key={phase.name}><strong>{phase.name} ({phase.seconds})</strong>: {phase.text}</li>)}
-            </ol>
-            <p>Everyone respawns at their side's spawn points at the start of each round, and the <Link href="/wiki/gameplay/gem">gem holder</Link> is picked again.</p>
-            <h2>Sudden death</h2>
-            <p>After the eighth round the match goes to <strong>Sudden Death</strong>, which lasts up to <strong>5 minutes</strong>. Then the match ends and the result is sent to the account server, which hands out rank changes and rewards.</p>
+            <p>Two teams play <strong>8 rounds</strong>, switching attack and defense each round. Players respawn and a <Link href="/wiki/gameplay/gem">gem holder</Link> is picked again.</p>
+            <h2>Round phases</h2>
+            <table><thead><tr><th scope="col">Phase</th><th scope="col">Time</th><th scope="col">What happens</th></tr></thead><tbody>{phases.map(phase => <tr key={phase.name}><td>{phase.name}</td><td>{phase.seconds}</td><td>{phase.text}</td></tr>)}</tbody></table>
+            <h2>Score and result</h2>
+            <p>Team score counts <Link href="/wiki/gameplay/gem">gems</Link> from holders and <Link href="/wiki/mechanics/orbstones">orbstones</Link>. After round 8, Sudden Death lasts up to <strong>5 minutes</strong>, then results are reported.</p>
+            <p>Casual and Ranked award <Link href="/wiki/progression/skill-tier">XP</Link>; Ranked also changes <Link href="/wiki/gameplay/ranked">RR</Link>.</p>
         </>,
     },
     {
         slug: "gem",
         section: "gameplay",
         title: "The gem",
-        summary: "Defenders protect a secret gem holder; attackers score by finding and taking them down, or by breaking orbstones.",
-        source: "client/gameplay/game/modes/standard/StandardGame.Gem.cs, StandardGame.Events.cs",
+        summary: "Protect the holder or hunt them for gems.",
+        source: "client/gameplay/game/modes/standard/StandardGame.Gem.cs, StandardGame.Events.cs; client/client/pages/results/MatchReport.cs:ScoreOf, Finish",
         body: () => <>
-            <VideoSlot label="Attackers focusing the defending gem holder" assetId="gameplay/gem" />
-            <p>At the start of every round, one living player on the <strong>defending</strong> team is chosen at random to carry the gem. <strong>Only the defenders know who it is</strong>; attackers have to work it out.</p>
-            <ul>
-                <li><strong>Killing the gem holder</strong> earns the killer a gem, and a new holder is chosen from the defenders still alive.</li>
-                <li><strong>Destroying an orbstone</strong> as an attacker also earns a gem. See <Link href="/wiki/mechanics/orbstones">Orbstones</Link>.</li>
-            </ul>
-            <p>Gems and gem plants are tracked per player and shown in your match stats.</p>
-            <h2>Tips</h2>
-            <ul>
-                <li>As a defender, protect your gem holder without making it obvious who they are.</li>
-                <li>As an attacker, watch who the defenders cover and heal: that&apos;s usually the holder.</li>
-                <li>As an attacker, break orbstones when the holder is too well protected or you can&apos;t tell who it is.</li>
-            </ul>
+            <h2>Holder and gems</h2>
+            <p>Each round, a random living defender carries the gem and is told privately. Attackers must identify them.</p>
+            <ul><li>Killing the holder earns the killer a gem; another living defender becomes holder.</li><li>Attackers also earn gems by breaking <Link href="/wiki/mechanics/orbstones">orbstones</Link>.</li></ul>
+            <p>Defend the holder with cover and healing; attackers can watch those clues or contest orbstones. Gems and plants appear in personal stats.</p>
+            <h2>Personal score and MVP</h2>
+            <p>Results score: <strong>300/gem + 100/orbstone + 150/kill + 75/assist + floor((damage + healing) / 10)</strong>. Team score counts gems only.</p>
+            <p>MVP needs the highest positive score on the winning team (either team on a draw). Leavers are excluded.</p>
         </>,
     },
     {
         slug: "controls",
         section: "gameplay",
         title: "Controls",
-        summary: "Default keyboard and mouse bindings. Every one of them can be rebound in Settings.",
+        summary: "Default keyboard and mouse bindings; rebind in Settings.",
         source: "client/project.godot [input]",
         body: () => <>
+            <h2>Default bindings</h2>
             <table>
                 <thead><tr><th>Action</th><th>Default</th></tr></thead>
                 <tbody>
                     {[
                         ["Move left / right", "A / D"],
-                        ["Jump (press again in the air to double jump)", "W"],
+                        ["Jump / double jump", "W"],
                         ["Slide", "S"],
                         ["Dash", "Shift"],
                         ["Grappling hook", "Space"],
@@ -121,7 +94,7 @@ export const articles: WikiArticle[] = [
                         ["Signature I", "Q"],
                         ["Signature II", "E"],
                         ["Ultimate", "X"],
-                        ["Zoom in / out", "Mouse wheel"],
+                        ["Zoom in / out", "Mouse wheel up or 8 / 2"],
                     ].map(([action, key]) => <tr key={action}><td>{action}</td><td><code>{key}</code></td></tr>)}
                 </tbody>
             </table>
@@ -131,170 +104,125 @@ export const articles: WikiArticle[] = [
     {
         slug: "ranked",
         section: "gameplay",
-        title: "Ranks",
-        summary: "Ten tiers from Unranked to Grandrival, with divisions inside each tier.",
+        title: "Rank Tiers",
+        summary: "Ranked RR, divisions and promotion.",
         source: "client/client/classes/user/rank/RankTier.cs, accounts/src/classes/RankSystem.ts",
         body: () => <>
-            <p>Your rank shows how you place against other players. Win to climb through divisions and tiers; losses take you back down.</p>
-            <div className="not-prose grid grid-cols-2 sm:grid-cols-5 gap-3 my-6">
-                {ranks.map(rank => <figure key={rank} className="panel-inset flex flex-col items-center gap-2 p-3">
+            <p>Ranked results change your rating points (RR), based on the result and expected win chance. Leaving adds a penalty. RR is separate from <Link href="/wiki/progression/skill-tier">skill tier</Link> and matchmaking skill.</p>
+            <h2>Rank tier ladder</h2>
+            <table><caption>Default divisions, from lowest rank tier to highest</caption><thead><tr><th scope="col">Rank tier</th><th scope="col">Divisions</th></tr></thead><tbody>
+                {ranks.map((rank, index) => <tr key={rank}><th scope="row"><span className="inline-flex items-center gap-2">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`/images/ranks/${rank.toLowerCase()}.png`} alt="" width={48} height={48} className="w-12 h-12 object-contain" loading="lazy" />
-                    <figcaption className="label-caps caps-sm text-ice">{rank}</figcaption>
-                </figure>)}
-            </div>
-            <p>Matchmaking uses a separate skill rating, so the players you meet are close to your level even early in a season.</p>
+                    <img src={`/images/ranks/${rank.toLowerCase().replace(/ /g, "")}.png`} alt="" width={24} height={24} loading="lazy" />{rank}
+                </span></th><td>{index === 0 || index === 9 ? "—" : index >= 7 ? "2" : "3"}</td></tr>)}
+            </tbody></table>
+            <h2>Promotion and demotion</h2>
+            <p>RR thresholds set divisions. Reach the next rank tier’s entry threshold to promote; a lower demotion threshold provides a buffer. Large changes can cross several rank tiers. Bronze has no demotion threshold.</p>
+            <p>Thresholds, divisions, starting RR and <Link href="/wiki/gameplay/queues">entry rules</Link> are configurable and may change by season.</p>
         </>,
     },
     {
         slug: "movement",
         section: "mechanics",
         title: "Movement",
-        summary: "Running, double jumps, slides, dashes, wall grabs and the grappling hook.",
+        summary: "The movement kit shared by every rival.",
         source: "client/gameplay/player/movement/*.cs",
         body: () => <>
-            <VideoSlot label="Movement showcase: dash, grapple and wall grab chained together" assetId="mechanics/movement" />
-            <p>Every rival shares the same movement kit; what differs is their base speed (see each <Link href="/wiki/rivals">rival's page</Link>).</p>
-            <h2>Jump and double jump</h2>
-            <p>Jump with <code>W</code> and press it again in the air for a stronger second jump.</p>
-            <h2>Dash</h2>
-            <p>Dash with <code>Shift</code> for a quick burst of distance. It has a <strong>3 second</strong> cooldown, so save it for dodging or escaping. Some rivals change how dashing works; Masr, for example, can dash in any direction.</p>
-            <VideoSlot label="Dash timing to dodge a projectile" assetId="mechanics/dash" aspect="wide" />
-            <h2>Slide</h2>
-            <p>Hold <code>S</code> to slide. Steep slopes make you slide on their own.</p>
-            <h2>Grappling hook</h2>
-            <p>Fire the hook with <code>Space</code> to pull yourself to a surface. Letting go gives you a small speed boost, so chain it into jumps.</p>
-            <h2>Wall grab</h2>
-            <p>Some walls can be grabbed. Hang on to aim from cover, then jump off.</p>
+            <p>Rivals share these moves; <Link href="/wiki/rivals">base speed</Link> varies. See <Link href="/wiki/gameplay/controls">Controls</Link> for bindings.</p>
+            <h2>Movement kit</h2>
+            <table><thead><tr><th scope="col">Move</th><th scope="col">Rule</th></tr></thead><tbody>
+                <tr><td>Double jump</td><td>Jump again while airborne.</td></tr>
+                <tr><td>Dash</td><td>Burst forward; 3-second cooldown. Masr can aim in any direction.</td></tr>
+                <tr><td>Slide</td><td>Hold Slide; steep slopes trigger it automatically.</td></tr>
+                <tr><td>Grappling hook</td><td>Pull toward a surface. Releasing adds a small speed boost.</td></tr>
+                <tr><td>Wall grab</td><td>Hang on suitable walls to aim, then jump off.</td></tr>
+            </tbody></table>
         </>,
     },
     {
         slug: "abilities",
         section: "mechanics",
         title: "Abilities and ultimates",
-        summary: "Five ability slots, five cast styles, and an ultimate that charges as you fight.",
+        summary: "Five ability slots and their cast styles.",
         source: "client/gameplay/ability/*.cs, client/gameplay/character/rivals/Rival.cs",
         body: () => <>
-            <p>Every rival has five abilities:</p>
-            <table>
-                <thead><tr><th>Slot</th><th>Default key</th><th>Role</th></tr></thead>
-                <tbody>
-                    <tr><td>Basic</td><td><code>Left mouse</code></td><td>Main attack, always available.</td></tr>
-                    <tr><td>Alternate</td><td><code>Right mouse</code></td><td>A second attack with a different shape.</td></tr>
-                    <tr><td>Signature I</td><td><code>Q</code></td><td>The rival's first special ability.</td></tr>
-                    <tr><td>Signature II</td><td><code>E</code></td><td>The second special ability.</td></tr>
-                    <tr><td>Ultimate</td><td><code>X</code></td><td>A powerful, match-turning ability that needs charge.</td></tr>
-                </tbody>
-            </table>
+            <h2>Five slots</h2>
+            <p>Each rival has Basic, Alternate, Signature I, Signature II and Ultimate. See <Link href="/wiki/rivals">rival kits</Link> for attacks and <Link href="/wiki/gameplay/controls">Controls</Link> for bindings.</p>
             <h2>Cast styles</h2>
-            <ul>
-                <li><strong>Single cast</strong>: fires once, then goes on cooldown.</li>
-                <li><strong>Active</strong>: puts you in a state for a set duration.</li>
-                <li><strong>Double cast</strong>: cast once to place something, <strong>recast</strong> to trigger it early.</li>
-                <li><strong>Charges</strong>: stores several uses that refill over time.</li>
-                <li><strong>Passive</strong>: always on, no button needed.</li>
-            </ul>
+            <table><thead><tr><th scope="col">Style</th><th scope="col">Behavior</th></tr></thead><tbody>
+                <tr><td>Single cast</td><td>One use, then cooldown.</td></tr>
+                <tr><td>Active</td><td>A state lasting a set duration.</td></tr>
+                <tr><td>Double cast</td><td>First cast opens a recast window for a second action.</td></tr>
+                <tr><td>Charges</td><td>Stored uses refill over time.</td></tr>
+                <tr><td>Passive</td><td>Always on; no button.</td></tr>
+            </tbody></table>
             <h2>Ultimate charge</h2>
-            <p>Ultimates fill up as you fight. Depending on the rival, charge comes from dealing damage, healing, or both. When the bar is full, press the ultimate key. Using it plays a short cinematic for everyone.</p>
-            <VideoSlot label="Ultimate cinematic examples" assetId="mechanics/ultimates" />
+            <p>Damage, healing or both fill the bar, depending on the rival. Cast when full; everyone sees a short cinematic. Availability depends on your state and kit.</p>
         </>,
     },
     {
         slug: "status-effects",
         section: "mechanics",
         title: "Status effects",
-        summary: "Every buff and debuff in the game and what it does.",
-        source: "client/gameplay/player/stats/Player.Effects.cs",
+        summary: "Buffs, debuffs and rival forms shown on your HUD.",
+        source: "client/gameplay/player/stats/Player.Effects.cs, Player.Life.cs, Player.Stats.cs, client/gameplay/ui/hud/effect/UIEffect.tscn",
         body: () => <>
-            <p>Abilities, auras and some items apply status effects. Buffs help the player who has them; debuffs hurt them. Effects show above the player and on your HUD.</p>
-            <h2>Buffs</h2>
-            <table><tbody>{buffs.map(([name, text]) => <tr key={name}><td><strong>{name}</strong></td><td>{text}</td></tr>)}</tbody></table>
-            <h2>Debuffs</h2>
-            <table><tbody>{debuffs.map(([name, text]) => <tr key={name}><td><strong>{name}</strong></td><td>{text}</td></tr>)}</tbody></table>
-            <h2>Rival forms</h2>
-            <p><strong>Spectre</strong> (Kenn) and <strong>Stormwrath</strong> (Masr) are special effects that represent those rivals' ultimate forms.</p>
+            <p>Abilities and auras apply status effects. They show above the player and on your HUD. Dying clears them all.</p>
+            <EffectList />
+        </>,
+    },
+    {
+        slug: "elements",
+        section: "mechanics",
+        title: "Elements",
+        summary: "Temporary elemental buffs from orbs.",
+        source: "client/gameplay/player/stats/Player.Elements.cs, Player.Life.cs, Player.Stats.cs, client/gameplay/orb/Orb.cs, Orb.tscn",
+        body: () => <>
+            <p>Collect <strong>Lethality, Vitality or Haste</strong> orbs for one stack each, up to <strong>10 per element</strong>. All elemental stacks are lost on death.</p>
+            <ElementGrid />
+            <h2>Collecting orbs</h2>
+            <ul><li><strong>Kills:</strong> one random-element orb drops at the fallen player. Touch to collect; unclaimed orbs vanish after <strong>15 seconds</strong>.</li><li><strong>Orbstones:</strong> see <Link href="/wiki/mechanics/orbstones">team rewards</Link>.</li></ul>
+            <p>Excess stacks are lost; leave maxed-out elements for teammates. The planned <Link href="/wiki/mechanics/permanent-orbs">permanent orb</Link> system trades 10 stacks for a lasting passive.</p>
         </>,
     },
     {
         slug: "orbstones",
         section: "mechanics",
-        title: "Orbstones and elements",
-        summary: "Three orbstones, three elements: Lethality, Vitality and Haste.",
-        source: "client/gameplay/game/modes/standard/StandardGame.Gem.cs, client/gameplay/orb/Orb.cs, client/gameplay/player/stats/Player.Elements.cs",
+        title: "Orbstones",
+        summary: "Break structures for team orbs and attacking gems.",
+        source: "client/gameplay/game/modes/standard/StandardGame.Gem.cs, StandardGame.cs",
         body: () => <>
-            <VideoSlot label="Breaking an orbstone and collecting its orbs" assetId="mechanics/orbstones" />
-            <p>From the <strong>Second Battle</strong> phase, three orbstones appear at fixed spots on the map. They respawn when the Final Battle starts and disappear at the end of the round.</p>
-            <table>
-                <thead><tr><th>Orbstone</th><th>Element</th></tr></thead>
-                <tbody>
-                    <tr><td>Red</td><td><strong>Lethality</strong></td></tr>
-                    <tr><td>Blue</td><td><strong>Vitality</strong></td></tr>
-                    <tr><td>White</td><td><strong>Haste</strong></td></tr>
-                </tbody>
-            </table>
-            <p>Picking up an orb gives you a stack of its element, up to <strong>10 stacks</strong> of each. Breaking an orbstone while attacking also earns you a <Link href="/wiki/gameplay/gem">gem</Link>.</p>
-        </>,
-    },
-    {
-        slug: "orbs",
-        section: "mechanics",
-        title: "Orbs",
-        summary: "Where orbs come from, how to pick them up and how long they last.",
-        source: "client/gameplay/orb/Orb.cs, client/gameplay/player/stats/Player.Life.cs, client/gameplay/game/modes/standard/StandardGame.Gem.cs",
-        body: () => <>
-            <p>Orbs are small elemental pickups. Each one carries one element: <strong>Lethality</strong> (red), <strong>Vitality</strong> (blue) or <strong>Haste</strong> (white).</p>
-            <h2>Where they come from</h2>
-            <ul>
-                <li>Breaking an <Link href="/wiki/mechanics/orbstones">orbstone</Link> releases orbs of that orbstone&apos;s element.</li>
-                <li>A player who is taken down drops one orb of a random element where they fell.</li>
-            </ul>
-            <h2>Picking them up</h2>
-            <p>Touch an orb to collect it; it flies to you and adds a <Link href="/wiki/mechanics/permanent-orbs">permanent orb</Link> stack. An orb that nobody collects disappears after <strong>15 seconds</strong>.</p>
+            <p>Three structures occupy fixed map spots: <strong>red = Lethality, blue = Vitality, white = Haste</strong>.</p>
+            <h2>Timing</h2>
+            <ul><li>Appear at Second Battle.</li><li>Broken ones respawn at Final Battle.</li><li>All disappear at round end.</li></ul>
+            <h2>Rewards</h2>
+            <ul><li>Every teammate receives one <Link href="/wiki/mechanics/elements">elemental orb</Link> of its element, wherever they are.</li><li>An attacking breaker also earns one <Link href="/wiki/gameplay/gem">gem</Link>; a defender earns none.</li></ul>
         </>,
     },
     {
         slug: "permanent-orbs",
         section: "mechanics",
         title: "Permanent orbs",
-        summary: "Element stacks you keep for the whole match, up to 10 of each.",
-        source: "client/gameplay/player/stats/Player.Elements.cs, Player.Life.cs, Player.Stats.cs, client/gameplay/ui/hud/HudScoreboard.cs",
+        summary: "A planned upgrade from elemental stacks to lasting passives.",
+        source: "Game design (owner). Not in the client yet: see client/gameplay/player/stats/Player.Elements.cs",
         body: () => <>
-            <p>Every orb you collect becomes a permanent stack of its element. Stacks last for the rest of the match, up to <strong>10 stacks</strong> per element. The scoreboard&apos;s <strong>P</strong> column shows each player&apos;s total.</p>
-            <table>
-                <thead><tr><th>Element</th><th>Per stack</th><th>At 10 stacks</th></tr></thead>
-                <tbody>
-                    <tr><td><strong>Lethality</strong></td><td>+2% damage on every hit you deal (at least +1)</td><td>+20% damage</td></tr>
-                    <tr><td><strong>Vitality</strong></td><td>−2.5% damage from every hit you take (at least −1), +3% healing received</td><td>−25% damage taken, +30% healing</td></tr>
-                    <tr><td><strong>Haste</strong></td><td>−4% cooldowns, +2% movement speed</td><td>−40% cooldowns, +20% speed</td></tr>
-                </tbody>
-            </table>
-            <p>The <strong>Lethargy</strong> <Link href="/wiki/mechanics/status-effects">status effect</Link> reduces haste while it lasts.</p>
+            <p><strong>Planned; not live yet.</strong> Trade 10 <Link href="/wiki/mechanics/elements">elemental orbs</Link> of one element for a passive lasting the game, including after death.</p>
+            <h2>The trade</h2>
+            <p>The 10 stacks are spent, resetting that element to 0. Players and orbstones do not drop permanent orbs.</p>
+            <p>Example passive: invisibility for 1 second after a kill. The full list will be added at release.</p>
         </>,
     },
     {
         slug: "economy",
         section: "mechanics",
         title: "Currencies, shop and battle pass",
-        summary: "Gold, Amethyst and Rivalite; the shop, loot, gift codes and the battle pass.",
+        summary: "Rewards, spending and gift codes.",
         source: "accounts/src/classes/ShopCatalog.ts, LootCatalog.ts, BattlePassCatalog.ts, networking/request/events/*",
         body: () => <>
-            <table>
-                <thead><tr><th>Currency</th><th>Used for</th></tr></thead>
-                <tbody>
-                    <tr><td><strong>Gold</strong></td><td>Earned by playing. Can be converted into Amethyst at a rate set by the team.</td></tr>
-                    <tr><td><strong>Amethyst</strong></td><td>The shop's main currency: rivals, cosmetics and the premium battle pass.</td></tr>
-                    <tr><td><strong>Rivalite</strong></td><td>Unlocks rivals directly.</td></tr>
-                </tbody>
-            </table>
-            <h2>Shop</h2>
-            <p>The shop sells rivals, skins, icons, borders, podiums, mottos and ropes. Some entries are on sale or available for a limited time only.</p>
-            <h2>Loot</h2>
-            <p>Loot boxes give one random reward from their pool when opened.</p>
-            <h2>Battle pass</h2>
-            <p>Each season has a battle pass with free and premium reward tiers. Earn battle pass XP by playing to unlock tiers, then claim rewards from the Battle Pass page in the game.</p>
-            <h2>Gift codes</h2>
-            <p>Codes from events and partners can be redeemed in the game for currency or cosmetics.</p>
-            <p>Every purchase, opened loot box and redeemed code appears in your <Link href="/account/purchases">purchase history</Link>.</p>
+            <h2>Rewards and spending</h2>
+            <ul><li><Link href="/wiki/progression/currencies">Currencies</Link> — Gold, Amethyst and Rivalite.</li><li><Link href="/wiki/progression/shop">Shop</Link> — prices and current offers.</li><li><Link href="/wiki/progression/battle-pass">Battle Pass</Link> — seasonal free and premium rewards.</li><li><Link href="/wiki/progression/loot">Loot</Link> — boxes and reward pools.</li><li><Link href="/wiki/progression/cosmetics">Cosmetics</Link> — your collection.</li></ul>
+            <h2>Gift codes and history</h2>
+            <p>Redeem event and partner codes in-game for currency or cosmetics. Purchases, opened boxes and redeemed codes appear in <Link href="/account/purchases">purchase history</Link>.</p>
         </>,
     },
 ];
@@ -306,3 +234,15 @@ export function getArticle(section: string, slug: string) {
 export function articlesIn(section: WikiSection) {
     return articles.filter(article => article.section === section);
 }
+
+/** Topic order for quiet cross-section navigation. */
+export const readingPath = [
+    ["getting-started", "install"], ["getting-started", "lobby"], ["getting-started", "your-rival"],
+    ["getting-started", "training"], ["gameplay", "controls"], ["mechanics", "movement"],
+    ["mechanics", "abilities"], ["gameplay", "match-flow"], ["gameplay", "gem"],
+    ["mechanics", "orbstones"], ["gameplay", "parties"], ["gameplay", "queues"],
+    ["progression", "skill-tier"], ["gameplay", "ranked"], ["progression", "battle-pass"],
+    ["progression", "shop"], ["progression", "loot"], ["progression", "currencies"], ["progression", "cosmetics"],
+].map(([section, slug]) => getArticle(section, slug)!);
+
+export const wikiHref = (article: WikiArticle) => `/wiki/${article.section}/${article.slug}`;

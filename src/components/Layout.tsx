@@ -7,6 +7,7 @@ import Navbar from "./navbar/Navbar";
 import TransitionContainer from "./TransitionContainer";
 import Footer from "./footer/Footer";
 import HeadLayout from "./Head";
+import CookieConsent from "./consent/CookieConsent";
 
 /** Dark gradient between the splash art and the content, so text never sits on raw art. */
 function Scrim() {
@@ -73,6 +74,7 @@ export default function Layout({ children, navbar, footer }: LayoutProps) {
                 {footer && <Footer />}
             </TransitionContainer>
         </div>
+        <CookieConsent />
     </TransitionContextProvider>
     );
 
